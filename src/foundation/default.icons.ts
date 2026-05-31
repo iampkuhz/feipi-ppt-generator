@@ -16,7 +16,7 @@ export const defaultIconRegistry: IconRegistryEntry[] = [
     file: 'assets/templates/default/icons/placeholder.svg',
     style: 'template-pack-icons',
     tags: ['占位', '默认'],
-    defaultColor: 'accentCyan',
+    defaultColor: 'cyanAccent',
     defaultSize: 'iconMD',
     description: '默认模板包的占位 icon，用于真实模板包接入前的渲染 smoke path。'
   }

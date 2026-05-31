@@ -36,8 +36,8 @@ export class PptxRenderer implements Renderer {
       context.slide.addText(slideSpec.title, {
         ...rect,
         fontFace: 'Arial',
-        fontSize: this.theme.fontSize('title'),
-        color: this.theme.color('inkPrimary'),
+        fontSize: this.theme.fontSize('pageTitle'),
+        color: this.theme.color('copyNavy'),
         bold: true
       });
     }
@@ -61,8 +61,8 @@ export class PptxRenderer implements Renderer {
         context.slide.addText(String(props.text ?? ''), {
           ...rect,
           fontFace: 'Arial',
-          fontSize: this.theme.fontSize(String(props.size ?? 'title')),
-          color: this.theme.color(String(props.color ?? 'inkPrimary')),
+          fontSize: this.theme.fontSize(String(props.size ?? 'pageTitle')),
+          color: this.theme.color(String(props.color ?? 'copyNavy')),
           bold: component.type === 'PageTitle'
         });
         return;
@@ -74,8 +74,8 @@ export class PptxRenderer implements Renderer {
           context.slide.addText(`• ${String(item)}`, {
             ...this.layout.contentRect(itemIndex),
             fontFace: 'Arial',
-            fontSize: this.theme.fontSize('body'),
-            color: this.theme.color('inkSecondary')
+            fontSize: this.theme.fontSize('bodyText'),
+            color: this.theme.color('neutralSlate')
           });
         });
         return;

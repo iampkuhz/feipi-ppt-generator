@@ -51,12 +51,10 @@ function inspectValue(value: unknown, path: string, warnings: TokenLintWarning[]
         path
       });
     }
-    if (path.endsWith('.surface') && !(value in defaultFoundation.surfaces)) {
-      warnings.push({
-        code: 'unknown_surface',
-        message: `Unknown surface alias at ${path}: ${value}`,
-        path
-      });
+    // surface 暂缓入库为代码标准，暂不做 lint 校验
+    // 详见 docs/design-system/surface-audit.md
+    if (path.endsWith('.surface')) {
+      // no-op until surface presets are standardized
     }
     if (path.endsWith('.radius') && !(value in defaultFoundation.radius)) {
       warnings.push({

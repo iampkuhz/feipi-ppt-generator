@@ -44,7 +44,7 @@ describe('token lint', () => {
 
   it('接受合法 alias', () => {
     const result = lintDeckTokens(
-      deckWithProps({ text: 'Good', color: 'inkPrimary', size: 'title' })
+      deckWithProps({ text: 'Good', color: 'copyNavy', size: 'pageTitle' })
     );
     expect(result.warnings).toHaveLength(0);
   });

@@ -1,159 +1,165 @@
+/**
+ * Moment2026 Layer0 Style Foundation 常量
+ *
+ * 本文件定义视觉基准层的稳定常量：字号、颜色、间距、圆角。
+ * surface 不在此文件定义，详见 docs/design-system/surface-audit.md。
+ */
+
+// ---------------------------------------------------------------------------
+// Typography：7 个标准字号，禁止 30pt
+// ---------------------------------------------------------------------------
+
 export const typeScale = {
-  microLabel: { latexAlias: 'tiny', pt: 6, usage: '极小标签、图表细标注' },
-  caption: { latexAlias: 'scriptsize', pt: 8, usage: '图标标题、徽章、小注释' },
-  bodySmall: { latexAlias: 'footnotesize', pt: 10, usage: '短正文、指标说明' },
-  body: { latexAlias: 'normalsize', pt: 12, usage: '正文、列表、说明文字' },
-  subtitle: { latexAlias: 'large', pt: 16, usage: '副标题、重要短语、指标值' },
-  title: { latexAlias: 'Large', pt: 20, usage: '页面标题、模块标题' },
-  hero: { latexAlias: 'huge', pt: 30, usage: '封面主标题、大 headline' },
-  sectionHero: { latexAlias: 'Huge', pt: 32, usage: '章节页主标题、总结句' },
-  micro: { latexAlias: 'tiny', pt: 6, usage: '兼容旧示例：极小标签' },
-  note: { latexAlias: 'footnotesize', pt: 10, usage: '兼容旧示例：说明文字' },
-  lead: { latexAlias: 'large', pt: 16, usage: '兼容旧示例：强调短语' },
-  headline: { latexAlias: 'huge', pt: 30, usage: '兼容旧示例：封面标题' },
-  display: { latexAlias: 'Huge', pt: 32, usage: '兼容旧示例：大结论句' }
+  microLabel:   { latexAlias: 'tiny',       pt: 6,  usage: '极小标签、图表细标注' },
+  captionLabel: { latexAlias: 'scriptsize',  pt: 8,  usage: 'icon caption、badge、图例、短标签' },
+  supportText:  { latexAlias: 'footnotesize',pt: 10, usage: 'KPI 说明、小卡片正文、二级说明' },
+  bodyText:     { latexAlias: 'small',       pt: 12, usage: '正文、bullet、段落说明' },
+  subtitleText: { latexAlias: 'normalsize',  pt: 16, usage: 'subtitle、指标值、小节标题' },
+  pageTitle:    { latexAlias: 'large',       pt: 20, usage: '常规页面标题、模块标题' },
+  heroTitle:    { latexAlias: 'Large',       pt: 32, usage: '章节页标题、结束页、hero 文字' }
 } as const;
+
+// ---------------------------------------------------------------------------
+// Colors：12 个 canonical palette aliases
+// ---------------------------------------------------------------------------
 
 export const colors = {
-  inkPrimary: { hex: '#111827', value: '#111827', usage: '主正文、深色标题' },
-  inkSecondary: { hex: '#64748B', value: '#64748B', usage: '辅助说明' },
-  accentPrimary: { hex: '#4F46E5', value: '#4F46E5', usage: '主强调、标题强调' },
-  accentBlue: { hex: '#2563EB', value: '#2563EB', usage: '蓝色强调' },
-  accentViolet: { hex: '#7C3AED', value: '#7C3AED', usage: '紫色强调' },
-  accentCyan: { hex: '#06B6D4', value: '#06B6D4', usage: '青色强调、icon 默认色' },
-  surfaceWhite: { hex: '#FFFFFF', value: '#FFFFFF', usage: '白色卡面' },
-  surfacePale: { hex: '#F8FAFC', value: '#F8FAFC', usage: '浅色背景' },
-  lineMuted: { hex: '#CBD5E1', value: '#CBD5E1', usage: '弱描边、网格线' },
-  surfacePrimary: { hex: '#FFFFFF', value: '#FFFFFF', usage: '兼容旧示例：默认卡面' },
-  surfaceMuted: { hex: '#F3F6FA', value: '#F3F6FA', usage: '兼容旧示例：弱背景' },
-  accentSecondary: { hex: '#06B6D4', value: '#06B6D4', usage: '兼容旧示例：次强调' },
-  lineDefault: { hex: '#D8E0EA', value: '#D8E0EA', usage: '兼容旧示例：默认线条' },
-  lineAccent: { hex: '#A5B4FC', value: '#A5B4FC', usage: '兼容旧示例：强调线条' }
+  copyNavy:       { hex: '#002060', usage: '正文、bullet、深色说明文字' },
+  titleIndigo:    { hex: '#4E4EA1', usage: '页面标题、小节标题、稳定标题色' },
+  white:          { hex: '#FFFFFF', usage: '白色文字、卡片底、浅色描边' },
+  neutralSlate:   { hex: '#9AA0B5', usage: '次级说明、图表轴、弱标签' },
+  cyanAccent:     { hex: '#32DEFF', usage: '全局唯一主要青色强调' },
+  brandViolet:    { hex: '#8343FF', usage: '品牌紫、主强调、渐变端点' },
+  brandBlue:      { hex: '#3B48F6', usage: '品牌蓝、数据强调、渐变端点' },
+  gradientBlue:   { hex: '#3064F6', usage: '紫蓝渐变的蓝端' },
+  royalBlue:      { hex: '#3E00FF', usage: '强蓝强调、深色图形' },
+  periwinkle:     { hex: '#5655FF', usage: '圆形渐变、辅助数据色' },
+  lavender:       { hex: '#9984FF', usage: '圆形渐变、柔和紫蓝' },
+  strokeLavender: { hex: '#A493F4', usage: '连接线、辅助描边、弱分隔线' }
 } as const;
 
-export const spacing = {
-  marginNone: { inch: 0, usage: '全出血背景' },
-  marginHairline: { inch: 0.08, usage: '内部微间距' },
-  marginTight: { inch: 0.2, usage: '高密度信息页' },
-  marginCompact: { inch: 0.35, usage: '信息密集页' },
-  marginDefault: { inch: 0.55, usage: '默认页面安全区' },
-  marginRelaxed: { inch: 0.75, usage: '图片、卡片、章节页' },
-  marginWide: { inch: 1.0, usage: '封面、留白型页面' },
-  gapXS: { inch: 0.06, usage: '组内极小间距' },
-  gapSM: { inch: 0.1, usage: '标签和小 icon 间距' },
-  gapMD: { inch: 0.16, usage: '默认组件间距' },
-  gapLG: { inch: 0.24, usage: '卡片间距' },
-  gapXL: { inch: 0.36, usage: '大模块间距' }
-} as const;
-
-export const radii = {
-  radiusNone: { px: 0, usage: '表格、图表、硬边容器' },
-  radiusXS: { px: 4, usage: '小标签、细分隔块' },
-  radiusSM: { px: 8, usage: '小徽章、小卡片' },
-  radiusMD: { px: 14, usage: '默认卡片' },
-  radiusLG: { px: 20, usage: '玻璃卡、图表卡' },
-  radiusXL: { px: 30, usage: '大面积 hero 卡片' },
-  radiusPill: { px: 999, usage: '胶囊标签' },
-  radiusCircle: { px: '50%', usage: '头像、icon 圆容器' },
-  none: { px: 0, usage: '兼容旧示例：硬边容器' },
-  xs: { px: 4, usage: '兼容旧示例：小标签' },
-  sm: { px: 8, usage: '兼容旧示例：小卡片' },
-  md: { px: 14, usage: '兼容旧示例：默认卡片' },
-  lg: { px: 20, usage: '兼容旧示例：大卡片' },
-  xl: { px: 30, usage: '兼容旧示例：大面积容器' },
-  pill: { px: 999, usage: '兼容旧示例：胶囊' },
-  circle: { px: '50%', usage: '兼容旧示例：圆形容器' }
-} as const;
-
-export const strokes = {
-  strokeNone: { color: 'transparent', widthPt: 0, usage: '无描边' },
-  strokeThin: { color: 'lineMuted', widthPt: 0.75, usage: '默认细描边' },
-  strokeAccent: { color: 'accentPrimary', widthPt: 1.25, usage: '强调描边' },
-  none: { color: 'transparent', widthPt: 0, usage: '兼容旧示例：无描边' },
-  thin: { color: 'lineDefault', widthPt: 0.75, usage: '兼容旧示例：细描边' },
-  accent: { color: 'lineAccent', widthPt: 1.25, usage: '兼容旧示例：强调描边' }
-} as const;
-
-export const shadows = {
-  shadowNone: { usage: '无阴影' },
-  shadowSoft: { opacity: 0.16, blur: 8, distance: 2, usage: '轻微浮起阴影' },
-  none: { usage: '兼容旧示例：无阴影' },
-  soft: { opacity: 0.16, blur: 8, distance: 2, usage: '兼容旧示例：轻阴影' }
-} as const;
-
-export const surfaces = {
-  surfacePlain: {
-    fill: 'surfaceWhite',
-    stroke: 'lineMuted',
-    shadow: 'shadowNone',
-    usage: '白色普通卡面'
+// 颜色角色映射（语义层，引用 palette alias）
+export const colorRoles = {
+  text: {
+    primary: 'copyNavy' as const,
+    secondary: 'neutralSlate' as const,
+    inverse: 'white' as const
   },
-  surfaceMuted: {
-    fill: 'surfacePale',
-    stroke: 'lineMuted',
-    shadow: 'shadowNone',
-    usage: '浅色背景模块'
+  title: {
+    primary: 'titleIndigo' as const,
+    inverse: 'white' as const
   },
-  surfaceGlass: {
-    fill: 'surfaceWhite',
-    opacity: 0.88,
-    stroke: 'surfaceWhite',
-    shadow: 'shadowSoft',
-    usage: '半透明亮色卡面'
+  accent: {
+    primary: 'brandViolet' as const,
+    secondary: 'brandBlue' as const,
+    cyan: 'cyanAccent' as const
   },
-  surfaceOutline: {
-    fill: 'transparent',
-    stroke: 'accentPrimary',
-    shadow: 'shadowNone',
-    usage: '仅描边容器'
+  icon: {
+    primary: 'brandViolet' as const,
+    secondary: 'cyanAccent' as const,
+    inverse: 'white' as const
+  },
+  stroke: {
+    subtle: 'strokeLavender' as const,
+    inverse: 'white' as const
+  },
+  chart: {
+    axis: 'neutralSlate' as const,
+    label: 'copyNavy' as const,
+    series1: 'brandViolet' as const,
+    series2: 'brandBlue' as const,
+    series3: 'cyanAccent' as const,
+    series4: 'lavender' as const,
+    series5: 'periwinkle' as const
   }
 } as const;
 
-export const iconSizes = {
-  iconXS: { pt: 10, usage: '极小辅助 icon' },
-  iconSM: { pt: 14, usage: '行内 icon' },
-  iconMD: { pt: 20, usage: '默认 icon' },
-  iconLG: { pt: 28, usage: '卡片主 icon' },
-  iconXL: { pt: 40, usage: '章节或封面 icon' }
+// 批准的颜色组合与渐变
+export const colorPairings = {
+  gradients: {
+    brandGradient:  ['brandViolet', 'brandBlue'] as const,
+    violetToBlue:   ['brandViolet', 'gradientBlue'] as const,
+    softCircle:     ['periwinkle', 'lavender'] as const
+  },
+  pairings: {
+    titleOnLight:    { text: 'titleIndigo' as const, accent: null, stroke: null, usage: '常规页面标题' },
+    copyOnLight:     { text: 'copyNavy' as const, accent: null, stroke: null, usage: '正文、说明文字' },
+    inverseOnBrand:  { text: 'white' as const, accent: 'brandViolet' as const, stroke: null, usage: '深色渐变面上的文字/icon' },
+    primaryAccent:   { text: 'copyNavy' as const, accent: 'brandViolet' as const, stroke: 'strokeLavender' as const, usage: 'KPI、重点数字、badge' },
+    blueAccent:      { text: 'copyNavy' as const, accent: 'brandBlue' as const, stroke: 'strokeLavender' as const, usage: '数据高亮、图表强调' },
+    cyanAccentPair:  { text: 'copyNavy' as const, accent: 'cyanAccent' as const, stroke: 'cyanAccent' as const, usage: 'icon 辅助强调、轻量高亮' },
+    softCircle:      { text: 'white' as const, accent: 'periwinkle' as const, stroke: null, usage: '圆形 icon 容器、柔和节点' },
+    brandGradient:   { text: 'white' as const, accent: 'brandViolet' as const, stroke: null, usage: '大面积品牌条、深色面板' }
+  }
 } as const;
 
-export const chartColors = {
-  dataPrimary: { color: 'accentPrimary', usage: '主数据系列' },
-  dataSecondary: { color: 'accentCyan', usage: '次数据系列' },
-  dataBlue: { color: 'accentBlue', usage: '蓝色数据系列' },
-  dataViolet: { color: 'accentViolet', usage: '紫色数据系列' },
-  dataMuted: { color: 'inkSecondary', usage: '弱化对比数据' }
+// ---------------------------------------------------------------------------
+// Spacing：page margins + internal gaps，全部为 4px 倍数
+// 不保留 bleedMargin（全屏背景由 background/image primitive fit:cover 处理）
+// ---------------------------------------------------------------------------
+
+export const spacing = {
+  // Page margins
+  tightMargin:   { px: 48,  inch: 0.30,  usage: '高密度 icon wall、表格、图表页' },
+  compactMargin: { px: 64,  inch: 0.40,  usage: '常规商务内容页，信息较多时使用' },
+  safeMargin:    { px: 96,  inch: 0.60,  usage: '默认安全区，推荐大多数页面使用' },
+  wideMargin:    { px: 128, inch: 0.80,  usage: '封面、章节页、图片页、留白较大的页面' },
+
+  // Internal gaps
+  hairGap: { px: 4,  inch: 0.025, usage: '极小分隔、图例内部' },
+  xsGap:   { px: 8,  inch: 0.05,  usage: 'badge/icon 与文字的紧密间距' },
+  smGap:   { px: 12, inch: 0.075, usage: '小卡片内部元素间距' },
+  mdGap:   { px: 16, inch: 0.10,  usage: '默认组件 gap' },
+  lgGap:   { px: 24, inch: 0.15,  usage: '卡片之间、图表与说明之间' },
+  xlGap:   { px: 32, inch: 0.20,  usage: '大区块之间' }
 } as const;
 
-export const mediaPlaceholders = {
-  mediaEmpty: { surface: 'surfaceMuted', icon: 'icon.placeholder', usage: '缺省媒体占位' },
-  imagePlaceholder: { surface: 'surfacePlain', icon: 'icon.placeholder', usage: '图片占位' }
+// ---------------------------------------------------------------------------
+// Radii：不超过 5 个，删除 sharp/tag 等过细 alias
+// ---------------------------------------------------------------------------
+
+export const radii = {
+  smRadius:     { px: 4,  usage: '小型短标签、小色块、紧凑容器' },
+  mdRadius:     { px: 12, usage: '默认卡片、图表容器、内容模块' },
+  lgRadius:     { px: 24, usage: '大面积面板、section card、视觉主容器' },
+  pillRadius:   { px: 9999, usage: '胶囊标签、状态标签、短 badge、进度条' },
+  circleRadius: { px: '50%' as const, usage: '正圆容器：头像、icon 圆容器、圆形节点' }
 } as const;
 
-export const progressRingStrokePresets = {
-  default: { track: 'lineMuted', value: 'accentPrimary', width: 'strokeThin' }
+// ---------------------------------------------------------------------------
+// 默认值
+// ---------------------------------------------------------------------------
+
+export const spacingDefaults = {
+  pageMargin: {
+    default: 'safeMargin' as const,
+    dense:   'compactMargin' as const,
+    iconWall:'tightMargin' as const,
+    hero:    'wideMargin' as const
+  }
 } as const;
 
-export const axisGridlineAliases = {
-  axisDefault: { color: 'lineMuted', width: 'strokeThin' },
-  gridlineDefault: { color: 'lineMuted', width: 'strokeThin' }
+export const radiusDefaults = {
+  smallBadge: 'pillRadius' as const,
+  smallSwatch:'smRadius' as const,
+  card:       'mdRadius' as const,
+  largePanel: 'lgRadius' as const,
+  avatar:     'circleRadius' as const,
+  iconBubble: 'circleRadius' as const
 } as const;
+
+// ---------------------------------------------------------------------------
+// 聚合导出
+// ---------------------------------------------------------------------------
 
 export const defaultFoundation = {
   id: 'default',
   typography: typeScale,
   colors,
+  colorRoles,
+  colorPairings,
   spacing,
-  radius: radii,
-  strokes,
-  shadows,
-  surfaces,
-  iconSizes,
-  dataColors: chartColors,
-  chartColors,
-  mediaPlaceholders,
-  progressRings: progressRingStrokePresets,
-  axisGridlines: axisGridlineAliases
+  radius: radii
 } as const;
 
 export type DefaultFoundation = typeof defaultFoundation;
@@ -161,4 +167,3 @@ export type TypographyAlias = keyof typeof typeScale;
 export type ColorAlias = keyof typeof colors;
 export type SpacingAlias = keyof typeof spacing;
 export type RadiusAlias = keyof typeof radii;
-export type SurfaceAlias = keyof typeof surfaces;

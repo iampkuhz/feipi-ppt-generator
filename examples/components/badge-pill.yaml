@@ -1,6 +1,5 @@
 type: BadgePill
 props:
   text: Example
-  size: caption
-  color: inkPrimary
-  surface: surfaceMuted
+  size: captionLabel
+  color: copyNavy

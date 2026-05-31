@@ -5,8 +5,8 @@ components:
   - type: PageTitle
     props:
       text: Key Points
-      size: title
-      color: inkPrimary
+      size: pageTitle
+      color: copyNavy
   - type: BulletList
     props:
       items:

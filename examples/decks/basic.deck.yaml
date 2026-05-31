@@ -11,8 +11,8 @@ slides:
       - type: PageTitle
         props:
           text: 基础示例
-          size: hero
-          color: inkPrimary
+          size: heroTitle
+          color: copyNavy
   - id: slide-002
     type: TitleContentSlide
     title: 关键要点
@@ -20,8 +20,8 @@ slides:
       - type: PageTitle
         props:
           text: 关键要点
-          size: title
-          color: inkPrimary
+          size: pageTitle
+          color: copyNavy
       - type: BulletList
         props:
           items:
@@ -34,5 +34,5 @@ slides:
       - type: PageTitle
         props:
           text: 谢谢
-          size: hero
-          color: inkPrimary
+          size: heroTitle
+          color: copyNavy

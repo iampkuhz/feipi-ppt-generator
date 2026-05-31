@@ -10,5 +10,5 @@ slides:
       - type: PageTitle
         props:
           text: 基础 fixture
-          size: hero
-          color: inkPrimary
+          size: heroTitle
+          color: copyNavy
