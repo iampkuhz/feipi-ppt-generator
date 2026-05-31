@@ -1,0 +1,24 @@
+{
+  "agent": "qwen-main-default",
+  "permissions": {
+    "defaultMode": "bypassPermissions",
+    "additionalDirectories": [
+    ],
+    "allow": [],
+    "ask": [],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(.mcp.json)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Read(~/.config/gh/hosts.yml)",
+      "Bash(git reset --hard:*)",
+      "Bash(git clean -fdx:*)",
+      "Bash(rm -rf /:*)",
+      "Bash(rm -rf ~:*)",
+      "Bash(chmod -R 777 /:*)",
+      "Bash(dd if=* of=/dev/*)"
+    ]
+  }
+}
