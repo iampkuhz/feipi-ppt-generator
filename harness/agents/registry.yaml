@@ -1,0 +1,170 @@
+schemaVersion: 1
+status: canonical-registry
+notes:
+  - 本文件是 agent 职责和委派契约真源。
+  - 当前不会自动生成 .claude、.codex 或 agents 目录内容。
+  - 新增或修改 agent 行为必须通过 OpenSpec change。
+generatedOutputs:
+  claudeAgents: .claude/agents/
+  codexAgents: .codex/agents/
+  sharedDocs: agents/
+handoffContract:
+  requiredFields:
+    - goal
+    - changeId
+    - taskId
+    - taskSource
+    - allowedFiles
+    - forbiddenFiles
+    - requiredContextFiles
+    - expectedOutput
+    - validationCommand
+    - failurePolicy
+agents:
+  repo-mapper:
+    role: 仓库结构和依赖关系盘点
+    trigger: 需要理解目录、模块边界或变更影响面
+    requiredInputs:
+      - 目标问题
+      - 允许读取路径
+    allowedScope:
+      - README.md
+      - AGENTS.md
+      - CLAUDE.md
+      - harness/**
+      - openspec/**
+      - src/**
+      - scripts/**
+      - tests/**
+      - docs/**
+    forbiddenScope:
+      - .env*
+      - tmp/agent_logs/**
+      - tmp/work/**
+      - node_modules/**
+      - dist/**
+    outputContract: 返回结构摘要、关键文件、风险和建议读取顺序。
+    validationResponsibility: 不修改文件，不运行重型验证。
+  openspec-planner:
+    role: OpenSpec change 规划
+    trigger: 非平凡变更或受保护路径变更
+    requiredInputs:
+      - 用户需求
+      - 目标 area
+      - 已知风险
+    allowedScope:
+      - openspec/changes/**
+      - openspec/templates/**
+      - harness/workflow/**
+    forbiddenScope:
+      - openspec/specs/**
+      - tmp/**
+    outputContract: 生成 proposal、design、tasks、delta spec 和 QA report 初稿。
+    validationResponsibility: 运行 OpenSpec layout 或 harness quality target。
+  deck-planner:
+    role: 根据 brief 规划 deck 结构
+    trigger: 需要从用户材料生成 deck plan
+    requiredInputs:
+      - brief
+      - audience
+      - goal
+      - constraints
+    allowedScope:
+      - openspec/specs/deck-dsl/**
+      - docs/architecture/**
+      - examples/decks/**
+    forbiddenScope:
+      - src/renderer/**
+      - src/components/**
+      - tmp/**
+    outputContract: 返回 deck outline、recipe 建议和缺失输入。
+    validationResponsibility: 检查叙事结构和必要章节是否完整。
+  content-structurer:
+    role: 将原始材料结构化为 slide 内容
+    trigger: deck plan 已存在且需要生成 slide-level 内容
+    requiredInputs:
+      - source material
+      - deck plan
+      - audience constraints
+    allowedScope:
+      - examples/decks/**
+      - openspec/specs/deck-dsl/**
+      - harness/context/**
+    forbiddenScope:
+      - src/renderer/**
+      - assets/templates/**
+      - tmp/**
+    outputContract: 输出 slide intent、文案来源和待确认项。
+    validationResponsibility: 标注文案 source、precision、confidence 和 fillStrategy。
+  component-selector:
+    role: 选择 registry 中的组件和 pattern
+    trigger: slide intent 已存在且需要组件映射
+    requiredInputs:
+      - slide intent
+      - component registry
+      - foundation aliases
+    allowedScope:
+      - src/registry/**
+      - src/components/**
+      - src/patterns/**
+      - openspec/specs/component-registry/**
+    forbiddenScope:
+      - src/renderer/**
+      - tmp/**
+    outputContract: 输出组件计划、fallback 说明和质量目标。
+    validationResponsibility: 检查不得引入 raw visual values。
+  slide-spec-writer:
+    role: 编写 schema 合法的 slide spec
+    trigger: 组件计划已确定
+    requiredInputs:
+      - component plan
+      - slide content
+      - schema constraints
+    allowedScope:
+      - examples/decks/**
+      - src/schema/**
+      - tests/schema/**
+    forbiddenScope:
+      - src/renderer/**
+      - src/foundation/default.foundation.json
+      - tmp/**
+    outputContract: 输出 deck 或 slide YAML，并列出 schema 校验结果。
+    validationResponsibility: 运行示例校验或 schema 单测。
+  component-engineer:
+    role: 实现组件、组件 schema 或 registry 映射
+    trigger: OpenSpec task 授权组件层变更
+    requiredInputs:
+      - task id
+      - allowed files
+      - expected component contract
+    allowedScope:
+      - src/components/**
+      - src/registry/**
+      - tests/unit/**
+      - tests/schema/**
+      - examples/components/**
+    forbiddenScope:
+      - src/renderer/**
+      - assets/templates/**
+      - tmp/**
+    outputContract: 返回实现摘要、测试和潜在兼容风险。
+    validationResponsibility: 运行 component-registry 或 schema 相关验证。
+  visual-qa:
+    role: 检查 PPTX、preview 和 QA artifact
+    trigger: 已生成 PPTX 或 preview artifact
+    requiredInputs:
+      - pptx path
+      - preview path
+      - quality summary path
+    allowedScope:
+      - tmp/previews/**
+      - tmp/rendered/**
+      - tmp/quality/**
+      - scripts/quality/**
+      - src/harness/**
+    forbiddenScope:
+      - .env*
+      - tmp/agent_logs/**
+      - assets/templates/**/extracted/raw/**
+    outputContract: 输出 PASS、FAIL 或 BLOCKED 及证据路径。
+    validationResponsibility: 不主观评分，只引用确定性 artifact。

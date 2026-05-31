@@ -1,0 +1,15 @@
+# 启用 GitHub branch protection 前，将占位 owner 替换为真实用户或团队。
+
+/openspec/         @engineering-owner
+/harness/          @engineering-owner
+/scripts/          @engineering-owner
+/.claude/          @engineering-owner
+/.codex/           @engineering-owner
+/src/foundation/   @foundation-owner
+/src/schema/       @schema-owner
+/src/registry/     @component-owner
+/src/components/   @component-owner
+/src/patterns/     @component-owner
+/src/renderer/     @renderer-owner
+/assets/templates/ @template-owner
+/docs/acceptance/  @engineering-owner

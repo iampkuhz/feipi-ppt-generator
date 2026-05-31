@@ -6,6 +6,7 @@ project:
 runtime:
   hook_entry: .claude/hooks/
   agent_hook_package: scripts/agent_hooks/
+  agent_registry: harness/agents/registry.yaml
   log_dir: tmp/agent_logs/
   quality_dir: tmp/quality/
   legacy_log_dir: .agent/
@@ -59,6 +60,11 @@ local_only:
   - tmp/work/
 docs:
   - harness/README.md
+  - harness/agents/README.md
   - harness/quality/quality-gate-matrix.md
   - harness/quality/deterministic-quality-gate.md
   - harness/workflow/hook-runtime-lifecycle.md
+  - docs/acceptance/ACCEPTANCE_CHECK_MATRIX.md
+  - docs/architecture/architecture-boundaries.md
+  - docs/architecture/generated-files.md
+  - docs/architecture/branch-protection.md

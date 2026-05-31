@@ -3,6 +3,9 @@ import { access } from 'node:fs/promises';
 const requiredPaths = [
   'harness/README.md',
   'harness/manifest.yaml',
+  'harness/agents/README.md',
+  'harness/agents/registry.yaml',
+  'harness/agents/templates/README.md',
   'harness/context/README.md',
   'harness/context/foundation-context.md',
   'harness/context/renderer-context.md',

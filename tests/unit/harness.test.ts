@@ -11,6 +11,8 @@ describe('harness 治理检查', () => {
     const manifest = parse(readFileSync('harness/manifest.yaml', 'utf8'));
     expect(manifest.quality.targets).toContain('harness');
     expect(manifest.runtime.log_dir).toBe('tmp/agent_logs/');
+    expect(manifest.runtime.agent_registry).toBe('harness/agents/registry.yaml');
+    expect(manifest.docs).toContain('docs/acceptance/ACCEPTANCE_CHECK_MATRIX.md');
   });
 
   it('关键结构检查通过', async () => {
