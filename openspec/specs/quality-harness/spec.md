@@ -1,26 +1,13 @@
-# Quality Harness
-
-## Purpose
-
-Provide repeatable checks for generated specs and PPTX outputs.
+# Quality Harness 规格
 
 ## Requirements
 
-- Schema validation.
-- Token and foundation lint.
-- PPTX inspection.
-- Preview rendering.
-- Visual regression.
-- Text overflow checks.
+### Requirement: 质量门禁必须确定性
 
-## Non-goals
+质量门禁只能输出 `PASS|FAIL|BLOCKED|SKIPPED`，不得输出 score、rating 或 qualityScore。
 
-- Perfect visual QA in the first version.
+#### Scenario: required gate 被跳过
 
-## Examples
-
-Run `ppt-lord qa examples/decks/basic.deck.yaml --out fixtures/reports/basic.md`.
-
-## Validation
-
-Run harness tests.
+- Given required gate 状态为 `SKIPPED`
+- When 生成 quality summary
+- Then overall status 必须为 `FAIL` 或 `BLOCKED`

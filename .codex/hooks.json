@@ -1,0 +1,5 @@
+{
+  "pre_tool": ".codex/hooks/pre_tool_guard.sh",
+  "post_tool": ".codex/hooks/post_tool_guard.sh",
+  "stop": ".codex/hooks/stop_check.sh"
+}

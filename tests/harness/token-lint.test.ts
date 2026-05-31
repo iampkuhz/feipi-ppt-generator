@@ -12,22 +12,22 @@ function deckWithProps(props: Record<string, unknown>) {
 }
 
 describe('token lint', () => {
-  it('blocks raw hex', () => {
+  it('拦截 raw hex', () => {
     const result = lintDeckTokens(deckWithProps({ text: 'Bad', color: '#123456' }));
     expect(result.warnings.some((item) => item.code === 'raw_hex')).toBe(true);
   });
 
-  it('blocks raw pt numbers', () => {
+  it('拦截 raw pt 数字', () => {
     const result = lintDeckTokens(deckWithProps({ text: 'Bad', pt: 19 }));
     expect(result.warnings.some((item) => item.code === 'raw_number')).toBe(true);
   });
 
-  it('blocks raw radius numbers', () => {
+  it('拦截 raw radius 数字', () => {
     const result = lintDeckTokens(deckWithProps({ text: 'Bad', radius: 13 }));
     expect(result.warnings.some((item) => item.code === 'raw_number')).toBe(true);
   });
 
-  it('blocks unknown icons', () => {
+  it('拦截未知 icon', () => {
     const spec = DeckSpecSchema.parse({
       id: 'lint-test',
       slides: [
@@ -42,7 +42,7 @@ describe('token lint', () => {
     expect(result.warnings.some((item) => item.code === 'unknown_icon')).toBe(true);
   });
 
-  it('accepts valid aliases', () => {
+  it('接受合法 alias', () => {
     const result = lintDeckTokens(
       deckWithProps({ text: 'Good', color: 'inkPrimary', size: 'title' })
     );

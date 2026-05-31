@@ -4,15 +4,15 @@ import { Command } from 'commander';
 
 export function renderPreviewCommand(): Command {
   return new Command('render-preview')
-    .description('Render PPTX previews. First version writes a placeholder report.')
-    .argument('<pptx>', 'Input PPTX path')
-    .requiredOption('--out <dir>', 'Preview output directory')
+    .description('导出 PPTX 预览；第一版写入占位报告')
+    .argument('<pptx>', '输入 PPTX 路径')
+    .requiredOption('--out <dir>', '预览输出目录')
     .action(async (pptx: string, options: { out: string }) => {
       await mkdir(options.out, { recursive: true });
       await writeFile(
         join(options.out, 'preview-report.json'),
-        `${JSON.stringify({ pptx, previews: [], warnings: ['Preview rendering is a stub.'] }, null, 2)}\n`
+        `${JSON.stringify({ pptx, previews: [], warnings: ['第一版预览导出为 stub。'] }, null, 2)}\n`
       );
-      console.log(`Created preview stub at ${options.out}`);
+      console.log(`PASS 已创建预览占位报告 ${options.out}`);
     });
 }

@@ -1,0 +1,10 @@
+[
+  {
+    "id": "icon.placeholder",
+    "source": "assets/templates/default/extracted/icons/placeholder.svg",
+    "tags": ["占位", "默认"],
+    "defaultColor": "accentCyan",
+    "defaultSize": "iconMD",
+    "description": "默认模板包占位 icon。"
+  }
+]

@@ -1,0 +1,7 @@
+id: default
+name: 默认模板包 fixture
+version: 0.1.0
+slideSize:
+  ratio: 16:9
+  widthInch: 10
+  heightInch: 5.625

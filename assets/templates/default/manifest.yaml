@@ -1,0 +1,18 @@
+id: default
+name: 默认模板包
+version: 0.1.0
+slideSize:
+  ratio: 16:9
+  widthInch: 10
+  heightInch: 5.625
+foundation:
+  file: foundation.json
+assets:
+  backgrounds: extracted/backgrounds
+  icons: extracted/icons
+  images: extracted/images
+registries:
+  icons: icon.registry.json
+  components: component-candidates.json
+reports:
+  audit: extracted/reports/template-audit.md

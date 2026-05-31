@@ -1,9 +1,8 @@
 {
-  "agent": "qwen-main-default",
+  "agent": "main-default",
   "permissions": {
     "defaultMode": "bypassPermissions",
-    "additionalDirectories": [
-    ],
+    "additionalDirectories": [],
     "allow": [],
     "ask": [],
     "deny": [
@@ -20,5 +19,24 @@
       "Bash(chmod -R 777 /:*)",
       "Bash(dd if=* of=/dev/*)"
     ]
+  },
+  "hooks": {
+    "SessionStart": ".claude/hooks/session-start.sh",
+    "SubagentStart": ".claude/hooks/subagent-start.sh",
+    "PreToolUse": {
+      "Bash": ".claude/hooks/pre-bash.sh",
+      "Write": ".claude/hooks/pre-write.sh",
+      "Edit": ".claude/hooks/pre-write.sh",
+      "MultiEdit": ".claude/hooks/pre-write.sh"
+    },
+    "PostToolUse": {
+      "Write": ".claude/hooks/post-write.sh",
+      "Edit": ".claude/hooks/post-write.sh",
+      "MultiEdit": ".claude/hooks/post-write.sh"
+    },
+    "PostToolUseFailure": ".claude/hooks/tool-failure.sh",
+    "Stop": ".claude/hooks/stop.sh",
+    "SubagentStop": ".claude/hooks/subagent-stop.sh",
+    "ConfigChange": ".claude/hooks/config-change.sh"
   }
 }

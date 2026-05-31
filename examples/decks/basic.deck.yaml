@@ -1,38 +1,38 @@
 id: basic-demo
-title: Basic Demo
+title: 基础示例
 templateId: default
 foundation: default
 size: wide-16-9
 slides:
   - id: slide-001
     type: CoverSlide
-    title: Example Deck
+    title: 基础示例
     components:
       - type: PageTitle
         props:
-          text: Example Deck
-          size: headline
+          text: 基础示例
+          size: hero
           color: inkPrimary
   - id: slide-002
     type: TitleContentSlide
-    title: Key Points
+    title: 关键要点
     components:
       - type: PageTitle
         props:
-          text: Key Points
+          text: 关键要点
           size: title
           color: inkPrimary
       - type: BulletList
         props:
           items:
-            - Use aliases for all visual values
-            - Register components before use
-            - Validate deck specs before rendering
+            - 所有视觉值都使用 alias
+            - 组件使用前必须注册
+            - 渲染前先校验 deck spec
   - id: slide-003
     type: ThankYouSlide
     components:
       - type: PageTitle
         props:
-          text: Thank you
-          size: headline
+          text: 谢谢
+          size: hero
           color: inkPrimary

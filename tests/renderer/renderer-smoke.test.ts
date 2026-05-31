@@ -8,7 +8,7 @@ import { DeckSpecSchema } from '../../src/schema/deck.schema.js';
 import { PptxRenderer } from '../../src/renderer/PptxRenderer.js';
 
 describe('pptx renderer', () => {
-  it('generates a PPTX for the basic deck example', async () => {
+  it('可以为基础 deck 示例生成 PPTX', async () => {
     const raw = parse(readFileSync('examples/decks/basic.deck.yaml', 'utf8'));
     const spec = DeckSpecSchema.parse(raw);
     const dir = await mkdtemp(join(tmpdir(), 'ppt-lord-'));

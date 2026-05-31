@@ -1,0 +1,14 @@
+id: fixture-basic
+title: 基础 fixture
+templateId: default
+foundation: default
+size: wide-16-9
+slides:
+  - id: slide-001
+    type: CoverSlide
+    components:
+      - type: PageTitle
+        props:
+          text: 基础 fixture
+          size: hero
+          color: inkPrimary

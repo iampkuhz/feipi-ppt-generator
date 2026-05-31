@@ -9,10 +9,13 @@ export type RenderOptions = {
 
 export type RenderResult = {
   pptxPath: string;
-  pdfPath?: string;
-  previewPaths?: string[];
   warnings: RenderWarning[];
-  reportPath?: string;
+  artifacts: {
+    previewDir?: string;
+    pdfPath?: string;
+    pngPaths?: string[];
+    qaReportPath?: string;
+  };
 };
 
 export interface Renderer {

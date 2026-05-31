@@ -9,10 +9,12 @@ export type ComponentRegistryEntry<TProps = unknown> = {
   layer: ComponentLayer;
   status: 'experimental' | 'stable' | 'deprecated';
   propsSchema: z.ZodType<TProps>;
-  allowedFoundationKeys?: string[];
+  allowedVariants: string[];
+  allowedTokens: string[];
   examples: string[];
+  visualFixtures: string[];
+  usageBoundary: string;
   description: string;
-  limitations?: string[];
 };
 
 export class ComponentRegistry {
@@ -20,7 +22,7 @@ export class ComponentRegistry {
 
   register(entry: ComponentRegistryEntry): void {
     if (this.entries.has(entry.type)) {
-      throw new Error(`Component already registered: ${entry.type}`);
+      throw new Error(`组件已注册：${entry.type}`);
     }
     this.entries.set(entry.type, entry);
   }
@@ -28,7 +30,7 @@ export class ComponentRegistry {
   get(type: string): ComponentRegistryEntry {
     const entry = this.entries.get(type);
     if (!entry) {
-      throw new Error(`Unknown component type: ${type}`);
+      throw new Error(`未知组件类型：${type}`);
     }
     return entry;
   }
@@ -80,8 +82,12 @@ export function createDefaultComponentRegistry(): ComponentRegistry {
       layer: 'primitive',
       status: 'experimental',
       propsSchema: textPropsSchema,
+      allowedVariants: [],
+      allowedTokens: ['title', 'body', 'inkPrimary', 'inkSecondary'],
       examples: ['examples/components/page-title.yaml'],
-      description: 'Lowest-level text drawing primitive.'
+      visualFixtures: ['tests/visual/golden/text-primitive.placeholder'],
+      usageBoundary: '仅绘制基础文本，不负责语义结构。',
+      description: '最低层文本绘制原语。'
     },
     {
       type: 'ShapePrimitive',
@@ -89,8 +95,12 @@ export function createDefaultComponentRegistry(): ComponentRegistry {
       layer: 'primitive',
       status: 'experimental',
       propsSchema: shapePropsSchema,
+      allowedVariants: [],
+      allowedTokens: ['surfacePlain', 'surfaceMuted', 'radiusMD'],
       examples: [],
-      description: 'Lowest-level shape drawing primitive.'
+      visualFixtures: ['tests/visual/golden/shape-primitive.placeholder'],
+      usageBoundary: '仅绘制基础形状，不承载业务语义。',
+      description: '最低层形状绘制原语。'
     },
     {
       type: 'IconPrimitive',
@@ -98,8 +108,12 @@ export function createDefaultComponentRegistry(): ComponentRegistry {
       layer: 'primitive',
       status: 'experimental',
       propsSchema: iconPropsSchema,
+      allowedVariants: [],
+      allowedTokens: ['iconMD', 'accentCyan'],
       examples: ['examples/components/icon-label.yaml'],
-      description: 'Icon drawing primitive backed by the icon registry.'
+      visualFixtures: ['tests/visual/golden/icon-primitive.placeholder'],
+      usageBoundary: '只能使用 icon registry 中的稳定 id。',
+      description: '由 icon registry 驱动的 icon 绘制原语。'
     },
     {
       type: 'PageTitle',
@@ -107,8 +121,12 @@ export function createDefaultComponentRegistry(): ComponentRegistry {
       layer: 'atom',
       status: 'experimental',
       propsSchema: textPropsSchema,
+      allowedVariants: [],
+      allowedTokens: ['title', 'hero', 'inkPrimary'],
       examples: ['examples/components/page-title.yaml'],
-      description: 'Semantic slide title atom.'
+      visualFixtures: ['tests/visual/golden/page-title.placeholder'],
+      usageBoundary: '用于页面主标题，不处理副标题或长正文。',
+      description: '语义化页面标题原子。'
     },
     {
       type: 'BadgePill',
@@ -116,8 +134,12 @@ export function createDefaultComponentRegistry(): ComponentRegistry {
       layer: 'atom',
       status: 'experimental',
       propsSchema: textPropsSchema.extend({ surface: z.string().optional() }),
+      allowedVariants: ['default', 'accent'],
+      allowedTokens: ['caption', 'surfacePlain', 'radiusPill'],
       examples: ['examples/components/badge-pill.yaml'],
-      description: 'Small pill-shaped badge atom.'
+      visualFixtures: ['tests/visual/golden/badge-pill.placeholder'],
+      usageBoundary: '用于短状态或分类标签，不承载长句。',
+      description: '小型胶囊徽章原子。'
     },
     {
       type: 'IconLabel',
@@ -125,8 +147,12 @@ export function createDefaultComponentRegistry(): ComponentRegistry {
       layer: 'atom',
       status: 'experimental',
       propsSchema: iconPropsSchema,
+      allowedVariants: ['horizontal', 'vertical'],
+      allowedTokens: ['iconMD', 'body', 'accentCyan'],
       examples: ['examples/components/icon-label.yaml'],
-      description: 'Icon plus label atom.'
+      visualFixtures: ['tests/visual/golden/icon-label.placeholder'],
+      usageBoundary: '用于 icon 加短标签，不处理复杂说明文本。',
+      description: 'icon 加标签原子。'
     },
     {
       type: 'MetricBlock',
@@ -134,8 +160,12 @@ export function createDefaultComponentRegistry(): ComponentRegistry {
       layer: 'atom',
       status: 'experimental',
       propsSchema: metricPropsSchema,
+      allowedVariants: ['default', 'compact'],
+      allowedTokens: ['subtitle', 'bodySmall', 'inkPrimary', 'inkSecondary'],
       examples: ['examples/components/metric-block.yaml'],
-      description: 'Metric value and label atom.'
+      visualFixtures: ['tests/visual/golden/metric-block.placeholder'],
+      usageBoundary: '用于单个指标值和说明，不负责图表布局。',
+      description: '指标值和标签原子。'
     },
     {
       type: 'BulletList',
@@ -143,8 +173,12 @@ export function createDefaultComponentRegistry(): ComponentRegistry {
       layer: 'atom',
       status: 'experimental',
       propsSchema: bulletListPropsSchema,
+      allowedVariants: ['default'],
+      allowedTokens: ['body', 'inkSecondary'],
       examples: [],
-      description: 'Simple bullet list atom.'
+      visualFixtures: ['tests/visual/golden/bullet-list.placeholder'],
+      usageBoundary: '用于短列表，不处理多层嵌套结构。',
+      description: '简单项目符号列表原子。'
     },
     {
       type: 'IconGrid',
@@ -152,8 +186,12 @@ export function createDefaultComponentRegistry(): ComponentRegistry {
       layer: 'composite',
       status: 'experimental',
       propsSchema: genericPropsSchema,
+      allowedVariants: ['default'],
+      allowedTokens: ['gapMD', 'iconMD', 'body'],
       examples: ['examples/slides/icon-grid.slide.yaml'],
-      description: 'Grid of icon-label items.'
+      visualFixtures: ['tests/visual/golden/icon-grid.placeholder'],
+      usageBoundary: '用于多组 icon-label 排列，不负责整页叙事。',
+      description: 'icon-label 项网格组合组件。'
     },
     {
       type: 'ChartCard',
@@ -161,8 +199,12 @@ export function createDefaultComponentRegistry(): ComponentRegistry {
       layer: 'composite',
       status: 'experimental',
       propsSchema: genericPropsSchema,
+      allowedVariants: ['placeholder'],
+      allowedTokens: ['surfacePlain', 'dataPrimary', 'dataSecondary'],
       examples: ['examples/components/chart-card.yaml'],
-      description: 'Chart container placeholder.'
+      visualFixtures: ['tests/visual/golden/chart-card.placeholder'],
+      usageBoundary: '第一版仅作为图表容器占位，不实现具体图表绘制。',
+      description: '图表卡片占位组件。'
     }
   ];
 

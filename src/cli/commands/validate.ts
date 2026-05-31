@@ -12,8 +12,8 @@ export async function loadDeckSpec(path: string): Promise<unknown> {
 
 export function validateCommand(): Command {
   return new Command('validate')
-    .description('Validate a deck spec against schema, registry, and token rules')
-    .argument('<deck-spec>', 'Path to deck YAML or JSON')
+    .description('校验 deck spec 的 schema、registry 和 token 规则')
+    .argument('<deck-spec>', 'deck YAML 或 JSON 路径')
     .action(async (deckSpecPath: string) => {
       const raw = await loadDeckSpec(deckSpecPath);
       const spec = DeckSpecSchema.parse(raw);
@@ -26,6 +26,6 @@ export function validateCommand(): Command {
       if (lintResult.warnings.length > 0) {
         throw new Error(lintResult.warnings.map((item) => item.message).join('\n'));
       }
-      console.log(`Validated ${deckSpecPath}`);
+      console.log(`PASS 已校验 ${deckSpecPath}`);
     });
 }

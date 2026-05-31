@@ -27,7 +27,7 @@ export class PptxRenderer implements Renderer {
 
     await mkdir(dirname(options.out), { recursive: true });
     await pptx.writeFile({ fileName: options.out });
-    return { pptxPath: options.out, warnings };
+    return { pptxPath: options.out, warnings, artifacts: {} };
   }
 
   async renderSlide(slideSpec: SlideSpec, context: RenderContext): Promise<void> {

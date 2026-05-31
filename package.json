@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "A generic, schema-driven PowerPoint generation framework.",
+  "description": "通用、schema 驱动的 PowerPoint 生成工具骨架。",
   "engines": {
     "node": ">=20"
   },
@@ -12,16 +12,18 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
     "test:unit": "vitest run tests/unit tests/harness",
     "test:watch": "vitest",
     "validate:examples": "tsx src/cli/index.ts validate examples/decks/basic.deck.yaml",
-    "generate:example": "tsx src/cli/index.ts generate examples/decks/basic.deck.yaml --out out/basic.pptx",
+    "generate:example": "tsx src/cli/index.ts generate examples/decks/basic.deck.yaml --out tmp/rendered/basic.pptx",
     "schema:generate": "tsx scripts/generate-schema.ts",
-    "check:identity": "tsx scripts/check-no-template-identity-leak.ts"
+    "check:identity": "tsx scripts/check-no-template-identity-leak.ts",
+    "lord": "tsx src/cli/index.ts",
+    "doctor": "tsx src/cli/index.ts doctor"
   },
   "dependencies": {
     "commander": "^12.1.0",

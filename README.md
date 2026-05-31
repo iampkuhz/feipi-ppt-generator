@@ -1,59 +1,85 @@
 # ppt-lord
 
-`ppt-lord` is a generic, schema-driven PowerPoint generation framework. It turns deck briefs and slide specs into registered component trees, resolves them through a style foundation, renders PPTX files, and leaves room for preview and QA checks.
+`ppt-lord` 是一个通用 PPT 创建工具仓库，用于把结构化输入、模板包、组件系统、布局规则和渲染后端组合起来，稳定生成 PowerPoint 文件及预览、检查报告和回归产物。
 
-## Architecture overview
+本仓库只承载通用生成能力，不绑定特定模板、品牌、客户或活动来源。
 
-The core package owns schema validation, the component registry, the renderer interface, template pack loading, and QA harness entry points. Template packs are plugins that provide aliases and assets; they are not the identity of the core repository.
-
-## Layer model
-
-1. Layer0 Style Foundation: typography, color, spacing, radius, surface, stroke, shadow, icon, and data aliases.
-2. Layer1 Drawing Primitives: smallest PPT drawing objects.
-3. Layer2 Semantic Atoms: titles, badges, labels, cards, metric blocks, lists.
-4. Layer3 Composite Blocks: stable reusable blocks.
-5. Layer4 Slide Patterns: whole-slide structures.
-6. Layer5 Deck Recipes: end-to-end deck narratives.
-
-## Template pack concept
-
-A template pack contains source files, extracted assets, a foundation JSON, an icon registry, candidate slide patterns, candidate components, and QA baselines. Raw extracted values must be reviewed before becoming aliases.
-
-## Quick start
+## 快速开始
 
 ```bash
 pnpm install
+pnpm build
 pnpm test
-pnpm validate:examples
-pnpm generate:example
+pnpm lord doctor
+pnpm lord validate examples/decks/basic.deck.yaml
+pnpm lord generate examples/decks/basic.deck.yaml --out tmp/rendered/basic.pptx
+pnpm lord preview tmp/rendered/basic.pptx --out tmp/previews/basic
 ```
 
-## CLI commands
+## 主要命令
 
 ```bash
-ppt-lord validate <deck-spec>
-ppt-lord generate <deck-spec> --out <path>
-ppt-lord inspect-template <template-pptx> --template-id <id> --out <path>
-ppt-lord render-preview <pptx> --out <dir>
-ppt-lord qa <deck-spec-or-pptx> --out <report>
+pnpm lord doctor
+pnpm lord validate <deck-spec>
+pnpm lord generate <deck-spec> --out <pptx>
+pnpm lord preview <pptx> --out <dir>
+pnpm lord quality --target <target> --change-id <change-id>
+pnpm lord change <change-id>
+pnpm lord archive <change-id>
 ```
 
-## How to add a template pack
+## 目录结构
 
-Run `ppt-lord inspect-template <template-pptx> --template-id <id> --out assets/templates/<id>/extracted`, review raw extraction output, then promote approved values into the pack foundation and icon registry.
+- `src/`：TypeScript 核心逻辑、schema、registry、layout、renderer 和 CLI。
+- `assets/templates/`：模板包与脱敏示例资产。
+- `examples/`：deck、slide、component 示例。
+- `openspec/`：长期规格、schema、模板和本地 change 工作区。
+- `harness/`：agent 运行态、质量矩阵、上下文包和治理规则。
+- `.claude/`、`.codex/`：agent 配置、hooks、skills 与说明入口。
+- `scripts/`：doctor、quality、OpenSpec、hook、preview 和 template 辅助脚本。
+- `tmp/`：本地运行态产物，默认不提交。
 
-## How to add a component
+## 生成链路
 
-Create an OpenSpec-style change first. A component update must add a props schema, registry entry, example spec, unit test, visual fixture placeholder, and usage boundary.
+```text
+用户 brief / 数据 / 素材
+  -> deck plan
+  -> slide spec
+  -> component tree
+  -> layout resolver
+  -> renderer
+  -> pptx
+  -> preview png/pdf
+  -> QA report
+```
 
-## How to run QA
+AI 只应生成 `deck brief`、`slide spec`、`component props` 或 `OpenSpec change`。业务生成阶段禁止直接写自由 PPT 坐标。
 
-Use `ppt-lord validate` for schema and token checks. Use `ppt-lord qa` for the first-version QA report stub. Preview rendering, visual regression, and overflow checks are defined but intentionally minimal in this first version.
+## 质量门禁
 
-## How to propose a change
+质量门禁必须确定性输出 `PASS|FAIL|BLOCKED|SKIPPED`，不使用主观评分。第一版提供 `quality` stub，会生成：
 
-Create `openspec/changes/<change-id>/proposal.md`, `design.md`, `tasks.md`, and spec deltas before modifying behavior. After implementation and validation, merge accepted requirements into `openspec/specs/`.
+```text
+tmp/quality/<change-id>/quality-gate-summary.<target>.json
+```
 
-## Current limitations
+`Stop` hook 只检查已生成 artifact，不运行重型渲染、Playwright、全量测试或 LibreOffice 导出。
 
-The renderer only supports a smoke path for titles and simple bullet lists. Template inspection, preview rendering, visual diff, and overflow checks are stubs with stable interfaces.
+## OpenSpec-style 变更流程
+
+非平凡变更必须先创建：
+
+```text
+openspec/changes/<change-id>/
+  proposal.md
+  design.md
+  tasks.md
+  specs/<area>/spec.md
+  qa-report.md
+```
+
+受保护长期规格目录包括 `openspec/specs/`、`openspec/schemas/`、`openspec/templates/`。归档后再把已确认内容合并回长期规格。
+
+## 中文规约
+
+项目文档、测试描述、schema 说明、运行日志、QA report、agent 输出默认使用中文。英文仅用于目录名、文件名、代码标识符、命令、路径、API 名称和标准术语词组。

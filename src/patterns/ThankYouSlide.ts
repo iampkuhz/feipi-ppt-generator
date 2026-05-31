@@ -1,1 +1,3 @@
-export type ThankYouSlidePattern = { type: 'ThankYouSlide' };
+export type ThankYouSlidePattern = {
+  type: 'ThankYouSlide';
+};

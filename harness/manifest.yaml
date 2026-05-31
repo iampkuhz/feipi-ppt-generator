@@ -1,0 +1,64 @@
+schemaVersion: 1
+project:
+  name: ppt-lord
+  type: ppt-generation-tool
+  description: 通用 PPT 生成工具
+runtime:
+  hook_entry: .claude/hooks/
+  agent_hook_package: scripts/agent_hooks/
+  log_dir: tmp/agent_logs/
+  quality_dir: tmp/quality/
+  legacy_log_dir: .agent/
+entrypoints:
+  deps: pnpm install
+  build: pnpm build
+  test: pnpm test
+  doctor: pnpm lord doctor
+  validate: pnpm lord validate
+  generate: pnpm lord generate
+  preview: pnpm lord preview
+quality:
+  runner: scripts/quality/run_quality_gate.ts
+  targets:
+    - foundation
+    - schema
+    - component-registry
+    - renderer
+    - template-pack
+    - visual-harness
+    - hook-runtime
+    - harness
+  quality_gates:
+    - name: typecheck
+      command: pnpm typecheck
+      required: true
+    - name: unit-tests
+      command: pnpm test
+      required: true
+    - name: schema-tests
+      command: pnpm test tests/schema
+      required: true
+    - name: no-raw-visual-values
+      command: pnpm tsx scripts/quality/check_no_raw_visual_values.ts
+      required: true
+    - name: harness-doctor
+      command: bash scripts/harness/doctor.sh
+      required: true
+local_only:
+  - .claude/settings.local.json
+  - .codex/local.json
+  - .mcp.json
+  - .env
+  - .env.*
+  - .venv/
+  - node_modules/
+  - tmp/agent_logs/
+  - tmp/quality/
+  - tmp/previews/
+  - tmp/rendered/
+  - tmp/work/
+docs:
+  - harness/README.md
+  - harness/quality/quality-gate-matrix.md
+  - harness/quality/deterministic-quality-gate.md
+  - harness/workflow/hook-runtime-lifecycle.md

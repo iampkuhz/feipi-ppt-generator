@@ -11,7 +11,10 @@ export const StyleFoundationSchema = z.object({
   strokes: z.record(AliasValueSchema),
   shadows: z.record(AliasValueSchema),
   surfaces: z.record(AliasValueSchema),
+  iconSizes: z.record(AliasValueSchema).optional(),
   dataColors: z.record(AliasValueSchema),
+  chartColors: z.record(AliasValueSchema).optional(),
+  mediaPlaceholders: z.record(AliasValueSchema).optional(),
   progressRings: z.record(AliasValueSchema),
   axisGridlines: z.record(AliasValueSchema)
 });

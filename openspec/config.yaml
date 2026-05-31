@@ -1,5 +1,31 @@
 project: ppt-lord
-workflow: ppt-generation
-specs_dir: openspec/specs
-changes_dir: openspec/changes
-schemas_dir: openspec/schemas
+workflow: spec-driven
+required_change_files:
+  - proposal.md
+  - design.md
+  - tasks.md
+recommended_change_files:
+  - qa-report.md
+spec_root: openspec/specs
+change_root: openspec/changes
+archive_root: openspec/changes/archive
+tracked_paths:
+  - openspec/specs/**
+  - openspec/schemas/**
+  - openspec/templates/**
+local_paths:
+  - openspec/changes/**
+protected_edit_rule:
+  enabled: true
+  protected_roots:
+    - openspec/specs
+    - openspec/schemas
+    - openspec/templates
+  require_active_change: true
+final_specs_update_rule:
+  enabled: true
+  on_archive: merge_changes_into_specs
+  cleanup: remove_change_directory
+language_policy:
+  default: zh-CN
+  allow_english_terms: true

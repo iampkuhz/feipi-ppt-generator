@@ -1,0 +1,7 @@
+services:
+  ppt-lord:
+    image: node:20-bookworm
+    working_dir: /workspace
+    volumes:
+      - ..:/workspace
+    command: pnpm lord doctor

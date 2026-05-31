@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+.env
+.env.*
+.venv/
+tmp/agent_logs/
+tmp/quality/
+tmp/previews/
+tmp/rendered/
+tmp/work/
+.git/
+.DS_Store

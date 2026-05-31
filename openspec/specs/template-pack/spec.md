@@ -1,22 +1,13 @@
-# Template Pack
-
-## Purpose
-
-Define how reusable template assets and aliases are packaged.
+# Template Pack 规格
 
 ## Requirements
 
-- A pack contains source files, extracted assets, manifests, foundation aliases, icon registry, candidates, and QA baselines.
-- Extracted raw values must be reviewed before promotion.
+### Requirement: 模板包不得污染仓库身份
 
-## Non-goals
+模板包必须以独立 `template-id` 管理，核心仓库身份不得引用特定品牌、客户或活动来源。
 
-- Binding the core repository to a specific template identity.
+#### Scenario: 加载默认模板包
 
-## Examples
-
-`assets/templates/default/` is a generic placeholder pack.
-
-## Validation
-
-Validate manifest structure and scan for identity leaks.
+- Given `assets/templates/default/manifest.yaml`
+- When template pack loader 读取 manifest
+- Then 系统获得 slide size、foundation 和资产目录信息

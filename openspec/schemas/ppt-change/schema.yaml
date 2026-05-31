@@ -1,0 +1,25 @@
+name: ppt-change
+version: 1
+description: PPT 生成工具的最小 OpenSpec-style 变更工作流
+artifacts:
+  proposal:
+    path: proposal.md
+    required: true
+  design:
+    path: design.md
+    required: true
+  tasks:
+    path: tasks.md
+    required: true
+  delta_specs:
+    path: specs/**/spec.md
+    required: true
+  qa_report:
+    path: qa-report.md
+    required: false
+validation:
+  require_requirements: true
+  require_scenarios: true
+  require_task_checkboxes: true
+  require_validation_evidence: true
+  require_chinese_descriptions: true
