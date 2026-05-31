@@ -1,0 +1,5 @@
+project: ppt-lord
+workflow: ppt-generation
+specs_dir: openspec/specs
+changes_dir: openspec/changes
+schemas_dir: openspec/schemas

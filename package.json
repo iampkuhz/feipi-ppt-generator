@@ -1,0 +1,43 @@
+{
+  "name": "ppt-lord",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A generic, schema-driven PowerPoint generation framework.",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "ppt-lord": "dist/cli/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:unit": "vitest run tests/unit tests/harness",
+    "test:watch": "vitest",
+    "validate:examples": "tsx src/cli/index.ts validate examples/decks/basic.deck.yaml",
+    "generate:example": "tsx src/cli/index.ts generate examples/decks/basic.deck.yaml --out out/basic.pptx",
+    "schema:generate": "tsx scripts/generate-schema.ts",
+    "check:identity": "tsx scripts/check-no-template-identity-leak.ts"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "pptxgenjs": "^3.12.0",
+    "yaml": "^2.5.1",
+    "zod": "^3.23.8",
+    "zod-to-json-schema": "^3.23.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.9.0",
+    "@types/node": "^20.14.15",
+    "eslint": "^9.9.0",
+    "prettier": "^3.3.3",
+    "tsx": "^4.16.5",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.1.0",
+    "vitest": "^2.0.5"
+  }
+}

@@ -1,0 +1,10 @@
+[
+  {
+    "id": "icon.placeholder",
+    "source": "template-pack-placeholder",
+    "file": "assets/templates/default/icons/placeholder.svg",
+    "style": "template-pack-icons",
+    "tags": ["placeholder"],
+    "description": "Placeholder entry used until a template pack provides real icons."
+  }
+]

@@ -1,0 +1,8 @@
+id: slide-dashboard
+type: DashboardSlide
+title: Dashboard
+components:
+  - type: MetricBlock
+    props:
+      label: Example metric
+      value: '42'

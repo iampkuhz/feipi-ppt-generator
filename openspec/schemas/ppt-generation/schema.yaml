@@ -1,0 +1,16 @@
+name: ppt-generation
+artifacts:
+  - id: proposal
+    path: proposal.md
+  - id: deck-brief
+    path: deck-brief.md
+  - id: design
+    path: design.md
+  - id: component-delta
+    path: component-delta.yaml
+  - id: slide-specs
+    path: slide-specs/
+  - id: tasks
+    path: tasks.md
+  - id: qa-report
+    path: qa-report.md

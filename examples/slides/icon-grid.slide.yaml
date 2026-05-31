@@ -1,0 +1,9 @@
+id: slide-icon-grid
+type: IconGridSlide
+title: Icon Grid
+components:
+  - type: IconGrid
+    props:
+      items:
+        - icon: icon.placeholder
+          label: Placeholder

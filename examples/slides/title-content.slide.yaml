@@ -1,0 +1,14 @@
+id: slide-title-content
+type: TitleContentSlide
+title: Key Points
+components:
+  - type: PageTitle
+    props:
+      text: Key Points
+      size: title
+      color: inkPrimary
+  - type: BulletList
+    props:
+      items:
+        - Use aliases
+        - Validate components

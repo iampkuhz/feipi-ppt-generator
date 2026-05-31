@@ -1,0 +1,17 @@
+{
+  "templateId": "default",
+  "source": "source/template.pptx",
+  "slideSize": {
+    "type": "wide-16-9",
+    "widthIn": 10,
+    "heightIn": 5.625
+  },
+  "assets": {
+    "backgrounds": [],
+    "icons": [],
+    "images": []
+  },
+  "candidatePatterns": [],
+  "candidateComponents": [],
+  "warnings": []
+}

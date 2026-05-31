@@ -1,0 +1,5 @@
+type: PageTitle
+props:
+  text: Example Title
+  size: title
+  color: inkPrimary

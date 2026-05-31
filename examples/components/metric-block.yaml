@@ -1,0 +1,4 @@
+type: MetricBlock
+props:
+  label: Conversion
+  value: 42%

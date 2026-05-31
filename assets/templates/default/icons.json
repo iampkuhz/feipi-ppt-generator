@@ -1,0 +1,9 @@
+[
+  {
+    "id": "icon.placeholder",
+    "source": "template-pack-placeholder",
+    "file": "assets/templates/default/icons/placeholder.svg",
+    "style": "template-pack-icons",
+    "tags": ["placeholder"]
+  }
+]

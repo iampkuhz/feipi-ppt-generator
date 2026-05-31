@@ -1,0 +1,11 @@
+export * from './foundation/index.js';
+export * from './schema/deck.schema.js';
+export * from './schema/slide.schema.js';
+export * from './schema/component.schema.js';
+export * from './schema/template-pack.schema.js';
+export { RenderResultSchema, RenderWarningSchema } from './schema/render-result.schema.js';
+export * from './registry/component-registry.js';
+export * from './registry/foundation-registry.js';
+export * from './registry/template-pack-registry.js';
+export * from './renderer/Renderer.js';
+export * from './renderer/PptxRenderer.js';

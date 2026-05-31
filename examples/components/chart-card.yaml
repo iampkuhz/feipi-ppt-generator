@@ -1,0 +1,4 @@
+type: ChartCard
+props:
+  title: Example chart
+  chartType: placeholder
