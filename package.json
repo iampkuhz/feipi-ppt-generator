@@ -38,8 +38,8 @@
     "eslint": "^9.9.0",
     "prettier": "^3.3.3",
     "tsx": "^4.16.5",
-    "typescript": "^5.5.4",
-    "typescript-eslint": "^8.1.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.60.1",
     "vitest": "^2.0.5"
   }
 }
