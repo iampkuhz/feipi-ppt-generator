@@ -8,9 +8,9 @@
       "maturity": "pptx-rendered",
       "component": {
         "type": "TextPrimitive",
-        "props": { "text": "TextPrimitive sample", "size": "bodyText", "color": "copyNavy" }
+        "props": { "text": "TextPrimitive 样例", "size": "bodyText", "color": "copyNavy" }
       },
-      "expectedTexts": ["TextPrimitive sample"],
+      "expectedTexts": ["TextPrimitive 样例"],
       "fixture": "tests/visual/golden/text-primitive.placeholder"
     },
     {
@@ -30,10 +30,21 @@
       "maturity": "pptx-rendered",
       "component": {
         "type": "IconPrimitive",
-        "props": { "icon": "icon.placeholder", "label": "IconPrimitive sample" }
+        "props": { "icon": "icon.placeholder", "label": "IconPrimitive 样例" }
       },
-      "expectedTexts": ["IconPrimitive sample"],
+      "expectedTexts": ["IconPrimitive 样例"],
       "fixture": "tests/visual/golden/icon-primitive.placeholder"
+    },
+    {
+      "type": "IconLabel",
+      "layer": "atom",
+      "maturity": "pptx-rendered",
+      "component": {
+        "type": "IconLabel",
+        "props": { "icon": "icon.placeholder", "label": "IconLabel 样例" }
+      },
+      "expectedTexts": ["IconLabel 样例"],
+      "fixture": "tests/visual/golden/icon-label.placeholder"
     },
     {
       "type": "PageTitle",
@@ -41,9 +52,9 @@
       "maturity": "pptx-rendered",
       "component": {
         "type": "PageTitle",
-        "props": { "text": "PageTitle sample", "size": "pageTitle", "color": "copyNavy" }
+        "props": { "text": "PageTitle 样例", "size": "pageTitle", "color": "copyNavy" }
       },
-      "expectedTexts": ["PageTitle sample"],
+      "expectedTexts": ["PageTitle 样例"],
       "fixture": "tests/visual/golden/page-title.placeholder"
     },
     {
@@ -52,9 +63,9 @@
       "maturity": "pptx-rendered",
       "component": {
         "type": "BadgePill",
-        "props": { "text": "BadgePill sample", "size": "captionLabel", "color": "copyNavy" }
+        "props": { "text": "BadgePill 样例", "size": "captionLabel", "color": "copyNavy" }
       },
-      "expectedTexts": ["BadgePill sample"],
+      "expectedTexts": ["BadgePill 样例"],
       "fixture": "tests/visual/golden/badge-pill.placeholder"
     },
     {
@@ -63,9 +74,9 @@
       "maturity": "pptx-rendered",
       "component": {
         "type": "MetricBlock",
-        "props": { "label": "MetricBlock label", "value": "42%" }
+        "props": { "label": "MetricBlock 指标", "value": "42%" }
       },
-      "expectedTexts": ["MetricBlock label", "42%"],
+      "expectedTexts": ["MetricBlock 指标", "42%"],
       "fixture": "tests/visual/golden/metric-block.placeholder"
     },
     {
@@ -74,9 +85,9 @@
       "maturity": "pptx-rendered",
       "component": {
         "type": "BulletList",
-        "props": { "items": ["BulletList first", "BulletList second"] }
+        "props": { "items": ["BulletList 第一项", "BulletList 第二项"] }
       },
-      "expectedTexts": ["BulletList first", "BulletList second"],
+      "expectedTexts": ["BulletList 第一项", "BulletList 第二项"],
       "fixture": "tests/visual/golden/bullet-list.placeholder"
     },
     {
@@ -85,9 +96,9 @@
       "maturity": "pptx-rendered",
       "component": {
         "type": "SurfaceCard",
-        "props": { "title": "Example card", "body": "SurfaceCard body", "surface": "white", "radius": "mdRadius" }
+        "props": { "title": "示例卡片", "body": "SurfaceCard 正文", "surface": "white", "radius": "mdRadius" }
       },
-      "expectedTexts": ["Example card", "SurfaceCard body"],
+      "expectedTexts": ["示例卡片", "SurfaceCard 正文"],
       "fixture": "tests/visual/golden/surface-card.placeholder"
     }
   ]

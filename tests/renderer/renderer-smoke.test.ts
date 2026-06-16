@@ -30,7 +30,7 @@ describe('pptx renderer', () => {
 
     expect(result.warnings.filter((item) => item.code === 'renderer.stub_component')).toHaveLength(0);
     expect(inspection.slideCount).toBe(spec.slides.length);
-    expect(inspection.texts.join('\n')).toContain('PageTitle sample');
-    expect(inspection.texts.join('\n')).toContain('Example card');
+    expect(inspection.texts.join('\n')).toContain('PageTitle 样例');
+    expect(inspection.texts.join('\n')).toContain('示例卡片');
   });
 });

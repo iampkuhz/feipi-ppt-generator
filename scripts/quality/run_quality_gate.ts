@@ -46,8 +46,8 @@ const targetGates: Partial<Record<QualityTarget, GateSpec[]>> = {
   renderer: [
     { name: 'typecheck', command: 'pnpm typecheck' },
     { name: 'rendererTests', command: 'pnpm test tests/renderer tests/e2e' },
-    { name: 'generateAtomSamples', command: 'pnpm tsx scripts/components/generate_atom_samples.ts --out tmp/atom-samples' },
-    { name: 'pptxInspect', command: 'pnpm tsx scripts/quality/check_pptx_structure.ts tmp/atom-samples/atom-components.pptx --expect-text PageTitle --expect-text "Example card"' }
+    { name: 'generateAtomSamples', command: 'pnpm generate:atoms' },
+    { name: 'pptxInspect', command: 'pnpm tsx scripts/quality/check_pptx_structure.ts tmp/atom-samples/atom-component-variants.pptx --expect-text PageTitle --expect-text IconLabel --expect-text SurfaceCard --expect-text circleRadius' }
   ],
   'hook-runtime': [
     { name: 'typecheck', command: 'pnpm typecheck' },

@@ -20,7 +20,7 @@
     "test:watch": "vitest",
     "validate:examples": "tsx src/cli/index.ts validate examples/decks/basic.deck.yaml",
     "generate:example": "tsx src/cli/index.ts generate examples/decks/basic.deck.yaml --out tmp/rendered/basic.pptx",
-    "generate:atoms": "tsx scripts/components/generate_atom_samples.ts --out tmp/atom-samples",
+    "generate:atoms": "tsx scripts/components/generate_atom_samples.ts --catalog examples/components/atom-component-variants.json --out tmp/atom-samples --gallery",
     "schema:generate": "tsx scripts/generate-schema.ts",
     "check:identity": "tsx scripts/check-no-template-identity-leak.ts",
     "lord": "tsx src/cli/index.ts",

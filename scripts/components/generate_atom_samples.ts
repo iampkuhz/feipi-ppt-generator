@@ -5,27 +5,35 @@ import { promisify } from 'node:util';
 import pptxgen from 'pptxgenjs';
 import { stringify } from 'yaml';
 import { defaultFoundation } from '../../src/foundation/default.foundation.js';
+import { inspectPptx } from '../../src/harness/inspect-pptx.js';
+import { PptxRenderer } from '../../src/renderer/PptxRenderer.js';
 import { AtomComponentCatalogSchema } from '../../src/schema/atom-component.schema.js';
 import { DeckSpecSchema, type DeckSpec } from '../../src/schema/deck.schema.js';
-import { PptxRenderer } from '../../src/renderer/PptxRenderer.js';
-import { inspectPptx } from '../../src/harness/inspect-pptx.js';
 
 const execFileAsync = promisify(execFile);
 const SLIDE_W = 13.333;
 const SLIDE_H = 7.5;
-const FONT = 'Poppins';
+const FONT = 'Aptos';
+const DISPLAY_FONT = 'Aptos Display';
 const C = {
-  copyNavy: '002060',
-  titleIndigo: '4E4EA1',
-  neutralSlate: '7F8AA8',
-  cyanAccent: '32DEFF',
-  brandViolet: '8343FF',
-  brandBlue: '3B48F6',
-  lavender: '9984FF',
-  strokeLavender: 'A493F4',
-  softBlue: 'EEF8FF',
+  bg: 'F6F8FB',
+  panel: 'FFFFFF',
+  ink: '162033',
+  muted: '667085',
+  faint: 'EEF2F6',
+  border: 'D7E0EA',
+  navy: '002060',
+  blue: '3064F6',
+  teal: '20C5C8',
+  mint: 'DDF7EF',
+  amber: 'F4B942',
+  coral: 'FF6B5E',
+  lilac: 'E9E4FF',
   white: 'FFFFFF'
 } as const;
+
+type PptxLike = any;
+type SlideLike = any;
 
 function optionValue(name: string, fallback: string): string {
   const index = process.argv.indexOf(name);
@@ -62,12 +70,28 @@ function hasDuplicateComponentTypes(items: CatalogItem[]): boolean {
 }
 
 const groups = groupByComponent(catalog.components);
-const shouldRenderGallery = process.argv.includes('--gallery') || hasDuplicateComponentTypes(catalog.components);
+const shouldRenderGallery =
+  process.argv.includes('--gallery') ||
+  hasDuplicateComponentTypes(catalog.components) ||
+  catalog.generatedDeckId.includes('variant');
 
-function addText(slide: any, text: string, options: Record<string, unknown>): void {
+function colorFromFoundation(alias: string, fallback = C.ink): string {
+  const entry = defaultFoundation.colors[alias as keyof typeof defaultFoundation.colors];
+  return entry?.hex?.replace('#', '').toUpperCase() ?? fallback;
+}
+
+function isDark(hex: string): boolean {
+  const value = hex.replace('#', '');
+  const r = Number.parseInt(value.slice(0, 2), 16);
+  const g = Number.parseInt(value.slice(2, 4), 16);
+  const b = Number.parseInt(value.slice(4, 6), 16);
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 < 0.48;
+}
+
+function addText(slide: SlideLike, text: string, options: Record<string, unknown>): void {
   slide.addText(text, {
     fontFace: FONT,
-    color: C.copyNavy,
+    color: C.ink,
     margin: 0.02,
     breakLine: false,
     fit: 'shrink',
@@ -75,130 +99,200 @@ function addText(slide: any, text: string, options: Record<string, unknown>): vo
   });
 }
 
-function addNoLineShape(pptx: any, slide: any, shapeType: string, options: Record<string, unknown>): void {
-  slide.addShape(shapeType, {
-    line: { color: C.white, transparency: 100 },
+function addRoundRect(
+  pptx: PptxLike,
+  slide: SlideLike,
+  options: Record<string, unknown>,
+  radius = 0.08
+): void {
+  slide.addShape(pptx.ShapeType.roundRect, {
+    fill: { color: C.panel, transparency: 0 },
+    line: { color: C.border, transparency: 0, width: 0.8 },
+    rectRadius: radius,
     ...options
   });
 }
 
-function addGalleryBackground(pptx: any, slide: any): void {
-  slide.background = { color: C.white };
-  addNoLineShape(pptx, slide, pptx.ShapeType.rect, {
-    x: 0,
-    y: 5.0,
-    w: SLIDE_W,
-    h: SLIDE_H - 5.0,
-    fill: { color: 'F2FAFF', transparency: 0 }
-  });
-  addNoLineShape(pptx, slide, pptx.ShapeType.ellipse, {
-    x: -1.7,
-    y: 4.2,
-    w: 7.6,
-    h: 3.2,
-    fill: { color: C.cyanAccent, transparency: 55 }
-  });
-  addNoLineShape(pptx, slide, pptx.ShapeType.ellipse, {
-    x: 4.9,
-    y: 4.15,
-    w: 8.8,
-    h: 3.35,
-    fill: { color: C.lavender, transparency: 62 }
-  });
-  addNoLineShape(pptx, slide, pptx.ShapeType.ellipse, {
-    x: 2.2,
-    y: 5.2,
-    w: 5.2,
-    h: 2.25,
-    fill: { color: C.brandBlue, transparency: 78 }
+function addPill(slide: SlideLike, text: string, x: number, y: number, w: number, color: string = C.teal): void {
+  slide.addText(text, {
+    x,
+    y,
+    w,
+    h: 0.22,
+    fontFace: FONT,
+    fontSize: 8.5,
+    bold: true,
+    align: 'center',
+    color,
+    margin: 0.01,
+    fit: 'shrink'
   });
 }
 
-function renderHeader(slide: any, title: string, subtitle: string): void {
-  addText(slide, title, {
-    x: 0.48,
-    y: 0.28,
-    w: 12.25,
-    h: 0.62,
-    fontSize: 30,
+function addGalleryBackground(pptx: PptxLike, slide: SlideLike, sectionColor: string = C.teal): void {
+  slide.background = { color: C.bg };
+  slide.addShape(pptx.ShapeType.rect, {
+    x: 0,
+    y: 0,
+    w: 0.16,
+    h: SLIDE_H,
+    fill: { color: sectionColor, transparency: 0 },
+    line: { color: sectionColor, transparency: 100 }
+  });
+  slide.addShape(pptx.ShapeType.rect, {
+    x: 0,
+    y: 0,
+    w: SLIDE_W,
+    h: 0.12,
+    fill: { color: C.ink, transparency: 0 },
+    line: { color: C.ink, transparency: 100 }
+  });
+  slide.addShape(pptx.ShapeType.rect, {
+    x: 0.16,
+    y: 6.98,
+    w: SLIDE_W - 0.16,
+    h: 0.06,
+    fill: { color: sectionColor, transparency: 0 },
+    line: { color: sectionColor, transparency: 100 }
+  });
+}
+
+function renderHeader(
+  slide: SlideLike,
+  title: string,
+  subtitle: string,
+  component: string,
+  sectionColor: string = C.teal
+): void {
+  addText(slide, component.toUpperCase(), {
+    x: 0.58,
+    y: 0.33,
+    w: 2.8,
+    h: 0.18,
+    fontSize: 8,
     bold: true,
-    color: C.titleIndigo
+    color: sectionColor
+  });
+  addText(slide, title, {
+    x: 0.56,
+    y: 0.54,
+    w: 8.9,
+    h: 0.46,
+    fontFace: DISPLAY_FONT,
+    fontSize: 25,
+    bold: true,
+    color: C.ink
   });
   addText(slide, subtitle, {
-    x: 0.52,
-    y: 1.02,
-    w: 12.0,
-    h: 0.3,
-    fontSize: 14,
+    x: 0.58,
+    y: 1.06,
+    w: 9.8,
+    h: 0.28,
+    fontSize: 10.5,
     bold: true,
-    color: C.copyNavy
+    color: C.muted
+  });
+  addRoundRect(
+    { ShapeType: { roundRect: 'roundRect' } },
+    slide,
+    {
+      x: 10.72,
+      y: 0.5,
+      w: 1.95,
+      h: 0.42,
+      fill: { color: C.panel, transparency: 0 },
+      line: { color: C.border, transparency: 0 }
+    },
+    0.2
+  );
+  addText(slide, '变体样张', {
+    x: 10.92,
+    y: 0.63,
+    w: 1.55,
+    h: 0.14,
+    fontSize: 7.5,
+    bold: true,
+    color: sectionColor,
+    align: 'center'
+  });
+  slide.addShape('rect', {
+    x: 0.58,
+    y: 1.42,
+    w: 12.08,
+    h: 0.01,
+    fill: { color: C.border, transparency: 0 },
+    line: { color: C.border, transparency: 100 }
   });
 }
 
-function renderTypographySlide(slide: any, pptx: any): void {
+function renderTypographySlide(slide: SlideLike, pptx: PptxLike): void {
+  addGalleryBackground(pptx, slide, C.blue);
   renderHeader(
     slide,
-    '字号别名：TextPrimitive canonical names',
-    '字号入口直接使用 canonical alias；usageAlias 只作为说明，业务代码不再随手写 pt。'
+    '字体层级：TextPrimitive 字号体系',
+    '展示每个字号 alias 的 pt、用途和真实排版预览；业务 spec 不直接写 pt。',
+    'TextPrimitive',
+    C.blue
   );
   const rows = Object.entries(defaultFoundation.typography);
-  const startY = 1.58;
-  const rowH = 0.57;
-  const gap = 0.13;
+  const startY = 1.66;
+  const rowH = 0.58;
   rows.forEach(([alias, token], index) => {
-    const y = startY + index * (rowH + gap);
-    slide.addShape(pptx.ShapeType.roundRect, {
-      x: 0.78,
+    const y = startY + index * 0.68;
+    const fill = index % 2 === 0 ? C.panel : 'F2F6FA';
+    addRoundRect(pptx, slide, {
+      x: 0.72,
       y,
-      w: 11.35,
+      w: 11.85,
       h: rowH,
-      fill: { color: index % 2 === 0 ? C.white : C.softBlue, transparency: 2 },
-      line: { color: 'D4EDFF', transparency: 5 }
+      fill: { color: fill, transparency: 0 }
     });
     addText(slide, token.latexAlias, {
-      x: 1.02,
-      y: y + 0.16,
-      w: 1.55,
-      h: 0.22,
-      fontSize: 11,
-      bold: true,
-      color: C.copyNavy
+      x: 0.98,
+      y: y + 0.17,
+      w: 1.42,
+      h: 0.18,
+      fontSize: 9,
+      bold: true
     });
     addText(slide, `${token.pt}pt`, {
-      x: 3.28,
+      x: 2.64,
       y: y + 0.17,
-      w: 0.7,
-      h: 0.2,
-      fontSize: 10,
-      bold: true,
-      color: C.titleIndigo
-    });
-    addText(slide, alias, {
-      x: 4.72,
-      y: y + 0.17,
-      w: 1.8,
-      h: 0.2,
-      fontSize: 10,
-      color: C.cyanAccent,
-      bold: true
-    });
-    addText(slide, token.usage, {
-      x: 7.05,
-      y: y + 0.17,
-      w: 2.95,
-      h: 0.2,
+      w: 0.62,
+      h: 0.18,
       fontSize: 9,
-      color: C.neutralSlate,
-      bold: true
+      bold: true,
+      color: C.blue
     });
-    addText(slide, 'Aa 文', {
-      x: 10.72,
+    addPill(slide, alias, 3.62, y + 0.18, 1.45, C.teal);
+    addText(slide, token.usage, {
+      x: 5.36,
+      y: y + 0.16,
+      w: 3.3,
+      h: 0.22,
+      fontSize: 8.2,
+      color: C.muted
+    });
+    addText(slide, 'Ag 文', {
+      x: 9.52,
       y: y + 0.08,
-      w: 0.82,
-      h: 0.38,
-      fontSize: Math.min(Math.max(token.pt, 10), 25),
+      w: 1.22,
+      h: 0.36,
+      fontFace: DISPLAY_FONT,
+      fontSize: Math.min(Math.max(token.pt, 10), 24),
       bold: alias === 'pageTitle' || alias === 'heroTitle',
-      color: C.titleIndigo
+      color: C.ink,
+      align: 'center'
+    });
+    addText(slide, alias === 'heroTitle' ? 'hero' : alias === 'pageTitle' ? 'title' : 'text', {
+      x: 11.12,
+      y: y + 0.18,
+      w: 0.75,
+      h: 0.16,
+      fontSize: 7,
+      bold: true,
+      color: C.muted,
+      align: 'center'
     });
   });
 }
@@ -208,427 +302,544 @@ function radiusDisplayValue(value: { px: number | string }): string {
 }
 
 function rectRadiusValue(alias: string): number {
-  if (alias === 'smRadius') return 0.02;
-  if (alias === 'mdRadius') return 0.08;
+  if (alias === 'smRadius') return 0.03;
+  if (alias === 'mdRadius') return 0.09;
   if (alias === 'lgRadius') return 0.16;
   if (alias === 'pillRadius') return 0.45;
-  return 0.08;
+  return 0.1;
 }
 
-function renderRadiusSlide(slide: any, pptx: any, componentName: string): void {
+function radiusCardPosition(index: number): { x: number; y: number; w: number; h: number } {
+  const top = [
+    { x: 0.78, y: 1.72, w: 3.7, h: 1.85 },
+    { x: 4.82, y: 1.72, w: 3.7, h: 1.85 },
+    { x: 8.86, y: 1.72, w: 3.7, h: 1.85 }
+  ];
+  const bottom = [
+    { x: 1.96, y: 4.16, w: 4.1, h: 1.95 },
+    { x: 7.18, y: 4.16, w: 4.1, h: 1.95 }
+  ];
+  return [...top, ...bottom][index] ?? top[0];
+}
+
+function renderShapeSample(
+  slide: SlideLike,
+  pptx: PptxLike,
+  alias: string,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  color: string = C.teal
+): void {
+  const shapeType = alias === 'circleRadius' ? pptx.ShapeType.ellipse : pptx.ShapeType.roundRect;
+  slide.addShape(shapeType, {
+    x,
+    y,
+    w,
+    h,
+    fill: { color: C.panel, transparency: 0 },
+    line: { color, width: 1.2 },
+    rectRadius: rectRadiusValue(alias)
+  });
+}
+
+function renderRadiusSlide(slide: SlideLike, pptx: PptxLike, componentName: string): void {
+  addGalleryBackground(pptx, slide, C.teal);
   renderHeader(
     slide,
-    `圆角别名：${componentName}`,
-    '用户只选 radius alias；renderer 负责映射到具体 PPTX 曲线，不开放任意弧度。'
+    `圆角语义：${componentName} radius alias`,
+    '同一组件只暴露 radius alias；具体 PPTX 曲线由 renderer 或样例脚本统一映射。',
+    componentName,
+    C.teal
   );
-  const radii = Object.entries(defaultFoundation.radius);
-  radii.forEach(([alias, token], index) => {
-    const col = index % 3;
-    const row = Math.floor(index / 3);
-    const baseX = 1.0 + col * 4.1;
-    const baseY = 1.63 + row * 2.22;
-    const shapeType =
-      alias === 'circleRadius'
-        ? pptx.ShapeType.ellipse
-        : pptx.ShapeType.roundRect;
+  Object.entries(defaultFoundation.radius).forEach(([alias, token], index) => {
+    const pos = radiusCardPosition(index);
+    addRoundRect(pptx, slide, { ...pos, fill: { color: C.panel, transparency: 0 } });
     const isCircle = alias === 'circleRadius';
-    const isPill = alias === 'pillRadius';
-    slide.addShape(shapeType, {
-      x: baseX + (isCircle ? 0.78 : 0.1),
-      y: baseY,
-      w: isCircle ? 1.36 : 2.8,
-      h: isPill ? 0.96 : isCircle ? 1.36 : 1.08,
-      fill: { color: C.white, transparency: 1 },
-      line: { color: C.cyanAccent, width: 1.4 },
-      rectRadius: rectRadiusValue(alias)
-    });
-    addText(slide, alias, {
-      x: baseX,
-      y: baseY + 1.34,
-      w: 3.0,
-      h: 0.22,
-      fontSize: 10,
-      bold: true,
-      align: 'center',
-      color: C.copyNavy
-    });
-    addText(slide, radiusDisplayValue(token), {
-      x: baseX,
-      y: baseY + 1.62,
-      w: 3.0,
-      h: 0.18,
-      fontSize: 8,
-      align: 'center',
-      color: C.neutralSlate
-    });
-    addText(slide, token.usage, {
-      x: baseX - 0.1,
-      y: baseY + 1.88,
-      w: 3.2,
-      h: 0.24,
-      fontSize: 7,
-      align: 'center',
-      color: C.neutralSlate
-    });
-  });
-  slide.addShape(pptx.ShapeType.roundRect, {
-    x: 1.22,
-    y: 6.35,
-    w: 10.9,
-    h: 0.72,
-    fill: { color: C.white, transparency: 8 },
-    line: { color: C.white, transparency: 20 }
-  });
-  addText(
-    slide,
-    '场景绑定：smRadius -> 小标签；mdRadius -> 默认卡片；lgRadius -> 大面板；pillRadius -> 状态胶囊；circleRadius -> icon 容器。',
-    {
-      x: 1.72,
-      y: 6.58,
-      w: 9.9,
-      h: 0.24,
-      fontSize: 11,
-      bold: true,
-      color: C.copyNavy
-    }
-  );
-}
-
-function renderPageTitleSlide(slide: any, pptx: any, group: CatalogGroup): void {
-  renderHeader(slide, '标题原子：PageTitle variants', '同一语义组件只切换 size/color alias；标题层级必须清楚可读。');
-  const variants = group.items.length > 0 ? group.items : [];
-  const fallback = [
-    { text: 'PageTitle subtitle', size: 'subtitleText', color: 'copyNavy' },
-    { text: 'PageTitle standard', size: 'pageTitle', color: 'copyNavy' },
-    { text: 'PageTitle hero', size: 'heroTitle', color: 'titleIndigo' }
-  ];
-  const samples = variants.length > 0 ? variants.map((item) => item.component.props) : fallback;
-  samples.forEach((props, index) => {
-    const size = String(props.size ?? fallback[index]?.size ?? 'pageTitle');
-    const color = String(props.color ?? fallback[index]?.color ?? 'copyNavy');
-    const token = defaultFoundation.typography[size as keyof typeof defaultFoundation.typography];
-    const y = 1.62 + index * 1.58;
-    slide.addShape(pptx.ShapeType.roundRect, {
-      x: 0.88,
-      y,
-      w: 11.45,
-      h: 1.12,
-      fill: { color: index % 2 === 0 ? C.white : C.softBlue, transparency: 2 },
-      line: { color: 'D4EDFF', transparency: 4 }
-    });
-    addText(slide, String(props.text ?? fallback[index]?.text ?? 'PageTitle'), {
-      x: 1.2,
-      y: y + 0.23,
-      w: 7.0,
-      h: 0.48,
-      fontSize: Math.min(token?.pt ?? 20, 30),
-      bold: true,
-      color: color === 'titleIndigo' ? C.titleIndigo : C.copyNavy
-    });
-    addText(slide, `${size} / ${token?.pt ?? '?'}pt / ${color}`, {
-      x: 8.55,
-      y: y + 0.44,
-      w: 3.25,
-      h: 0.24,
-      fontSize: 10,
-      align: 'right',
-      color: C.neutralSlate,
-      bold: true
-    });
-  });
-}
-
-function renderBadgeSlide(slide: any, pptx: any): void {
-  renderHeader(slide, '徽章胶囊：BadgePill color variants', 'BadgePill 固定使用 pillRadius；颜色仅从 canonical palette alias 选择。');
-  const colors = Object.entries(defaultFoundation.colors);
-  colors.forEach(([alias, token], index) => {
-    const col = index % 4;
-    const row = Math.floor(index / 4);
-    const x = 0.9 + col * 3.1;
-    const y = 1.72 + row * 1.55;
-    slide.addShape(pptx.ShapeType.roundRect, {
-      x,
-      y,
-      w: 2.46,
-      h: 0.62,
-      fill: { color: token.hex.replace('#', ''), transparency: alias === 'white' ? 0 : 82 },
-      line: { color: token.hex.replace('#', ''), width: 1.1 },
-      rectRadius: 0.42
-    });
-    addText(slide, alias, {
-      x: x + 0.18,
-      y: y + 0.18,
-      w: 2.08,
-      h: 0.18,
-      fontSize: 9,
-      bold: true,
-      align: 'center',
-      color: alias === 'copyNavy' || alias === 'royalBlue' ? C.white : C.copyNavy
-    });
-    addText(slide, token.hex, {
-      x,
-      y: y + 0.82,
-      w: 2.46,
-      h: 0.16,
-      fontSize: 7,
-      align: 'center',
-      color: C.neutralSlate
-    });
-    addText(slide, token.usage, {
-      x: x - 0.12,
-      y: y + 1.08,
-      w: 2.7,
-      h: 0.18,
-      fontSize: 6.6,
-      align: 'center',
-      color: C.neutralSlate
-    });
-  });
-}
-
-function renderIconSlide(slide: any, pptx: any, group: CatalogGroup): void {
-  renderHeader(slide, '图标原语：IconPrimitive states', '第一版 icon 只展示 registry id、label 和 cyan accent 容器；业务图标后续接入 icon registry。');
-  const labels =
-    group.items.length > 0
-      ? group.items.map((item) => String(item.component.props.label ?? item.component.props.icon ?? 'icon.placeholder'))
-      : ['icon.data', 'icon.ai', 'icon.search', 'icon.alert', 'icon.flow', 'icon.metric'];
-  const padded = [...labels, 'icon.data', 'icon.ai', 'icon.search', 'icon.alert', 'icon.flow', 'icon.metric'].slice(0, 6);
-  padded.forEach((label, index) => {
-    const col = index % 3;
-    const row = Math.floor(index / 3);
-    const x = 1.08 + col * 4.05;
-    const y = 1.7 + row * 2.15;
-    slide.addShape(pptx.ShapeType.roundRect, {
-      x,
-      y,
-      w: 3.0,
-      h: 1.55,
-      fill: { color: C.white, transparency: 4 },
-      line: { color: 'D4EDFF', transparency: 8 }
-    });
-    slide.addShape(pptx.ShapeType.ellipse, {
-      x: x + 0.28,
-      y: y + 0.34,
-      w: 0.74,
-      h: 0.74,
-      fill: { color: C.cyanAccent, transparency: 18 },
-      line: { color: C.cyanAccent, width: 1.1 }
-    });
-    addText(slide, 'i', {
-      x: x + 0.28,
-      y: y + 0.49,
-      w: 0.74,
-      h: 0.2,
-      fontSize: 13,
-      bold: true,
-      align: 'center',
-      color: C.copyNavy
-    });
-    addText(slide, label, {
-      x: x + 1.16,
-      y: y + 0.42,
-      w: 1.5,
-      h: 0.22,
-      fontSize: 10,
-      bold: true,
-      color: C.copyNavy
-    });
-    addText(slide, 'IconPrimitive', {
-      x: x + 1.16,
-      y: y + 0.72,
-      w: 1.45,
-      h: 0.18,
-      fontSize: 7,
-      color: C.neutralSlate
-    });
-  });
-}
-
-function renderMetricSlide(slide: any, pptx: any, group: CatalogGroup): void {
-  renderHeader(slide, '指标模块：MetricBlock variants', 'MetricBlock 只承载一个 value、一个 label 和可选 delta，避免混入图表职责。');
-  group.items.forEach((item, index) => {
-    const col = index % 3;
-    const x = 0.95 + col * 4.1;
-    const y = 1.82;
-    const props = item.component.props;
-    slide.addShape(pptx.ShapeType.roundRect, {
-      x,
-      y,
-      w: 3.25,
-      h: 2.25,
-      fill: { color: C.white, transparency: 2 },
-      line: { color: 'D4EDFF', transparency: 4 }
-    });
-    addText(slide, String(props.value ?? '42%'), {
-      x: x + 0.28,
-      y: y + 0.38,
-      w: 2.68,
-      h: 0.5,
-      fontSize: 28,
-      bold: true,
-      color: index === 1 ? C.brandViolet : C.copyNavy
-    });
-    addText(slide, String(props.label ?? 'Metric label'), {
-      x: x + 0.3,
-      y: y + 1.02,
-      w: 2.6,
-      h: 0.22,
-      fontSize: 10,
-      bold: true,
-      color: C.neutralSlate
-    });
-    slide.addShape(pptx.ShapeType.roundRect, {
-      x: x + 0.3,
-      y: y + 1.6,
-      w: 2.55,
-      h: 0.14,
-      fill: { color: 'E6F4FF', transparency: 0 },
-      line: { color: 'E6F4FF', transparency: 100 }
-    });
-    slide.addShape(pptx.ShapeType.roundRect, {
-      x: x + 0.3,
-      y: y + 1.6,
-      w: 1.3 + index * 0.35,
-      h: 0.14,
-      fill: { color: index === 2 ? C.cyanAccent : C.brandBlue, transparency: 8 },
-      line: { color: index === 2 ? C.cyanAccent : C.brandBlue, transparency: 100 }
-    });
-  });
-}
-
-function renderBulletSlide(slide: any, pptx: any, group: CatalogGroup): void {
-  renderHeader(slide, '项目列表：BulletList density variants', 'BulletList 只处理短列表；长段落和多层嵌套必须交给更高层 pattern。');
-  group.items.forEach((item, index) => {
-    const col = index % 3;
-    const x = 0.95 + col * 4.1;
-    const y = 1.65;
-    const items = Array.isArray(item.component.props.items) ? item.component.props.items : [];
-    slide.addShape(pptx.ShapeType.roundRect, {
-      x,
-      y,
-      w: 3.25,
-      h: 3.85,
-      fill: { color: C.white, transparency: 2 },
-      line: { color: 'D4EDFF', transparency: 4 }
-    });
-    addText(slide, `variant ${index + 1}`, {
-      x: x + 0.28,
-      y: y + 0.28,
-      w: 2.6,
-      h: 0.22,
-      fontSize: 10,
-      bold: true,
-      color: C.titleIndigo
-    });
-    items.forEach((text, itemIndex) => {
-      const lineY = y + 0.78 + itemIndex * 0.48;
-      slide.addShape(pptx.ShapeType.ellipse, {
-        x: x + 0.33,
-        y: lineY + 0.07,
-        w: 0.1,
-        h: 0.1,
-        fill: { color: C.cyanAccent, transparency: 0 },
-        line: { color: C.cyanAccent, transparency: 100 }
-      });
-      addText(slide, String(text), {
-        x: x + 0.55,
-        y: lineY,
-        w: 2.4,
+    if (isCircle) {
+      renderShapeSample(slide, pptx, alias, pos.x + 1.5, pos.y + 0.22, 0.9, 0.9, C.teal);
+      addText(slide, alias, {
+        x: pos.x + 0.24,
+        y: pos.y + 1.25,
+        w: pos.w - 0.48,
         h: 0.2,
         fontSize: 10,
-        color: C.copyNavy
+        bold: true,
+        align: 'center'
       });
+      addText(slide, `${radiusDisplayValue(token)} / ${token.usage}`, {
+        x: pos.x + 0.24,
+        y: pos.y + 1.52,
+        w: pos.w - 0.48,
+        h: 0.18,
+        fontSize: 7.2,
+        color: C.muted,
+        align: 'center'
+      });
+      return;
+    }
+    renderShapeSample(
+      slide,
+      pptx,
+      alias,
+      pos.x + (isCircle ? 1.34 : 0.62),
+      pos.y + 0.33,
+      isCircle ? 1.08 : pos.w - 1.24,
+      isCircle ? 1.08 : 0.72,
+      C.teal
+    );
+    addText(slide, alias, {
+      x: pos.x + 0.22,
+      y: pos.y + pos.h - 0.7,
+      w: pos.w - 0.44,
+      h: 0.2,
+      fontSize: 10,
+      bold: true,
+      align: 'center'
+    });
+    addText(slide, `${radiusDisplayValue(token)} / ${token.usage}`, {
+      x: pos.x + 0.24,
+      y: pos.y + pos.h - 0.42,
+      w: pos.w - 0.48,
+      h: 0.18,
+      fontSize: 7.2,
+      color: C.muted,
+      align: 'center'
     });
   });
 }
 
-function renderSurfaceCardSlide(slide: any, pptx: any): void {
-  renderHeader(slide, '卡片容器：SurfaceCard radius variants', 'SurfaceCard 展示短标题和短正文；radius alias 决定容器语气。');
-  const radii = Object.entries(defaultFoundation.radius);
-  radii.forEach(([alias, token], index) => {
-    const col = index % 3;
-    const row = Math.floor(index / 3);
-    const x = 0.92 + col * 4.1;
-    const y = 1.55 + row * 2.15;
-    const shapeType = alias === 'circleRadius' ? pptx.ShapeType.ellipse : pptx.ShapeType.roundRect;
-    slide.addShape(shapeType, {
-      x,
+function renderPageTitleSlide(slide: SlideLike, pptx: PptxLike, group: CatalogGroup): void {
+  addGalleryBackground(pptx, slide, C.blue);
+  renderHeader(
+    slide,
+    '标题原子：PageTitle 层级',
+    '展示 subtitle、standard、hero 三种标题层级；只切换 size 和 color alias。',
+    'PageTitle',
+    C.blue
+  );
+  const samples = group.items.map((item) => item.component.props);
+  samples.forEach((props, index) => {
+    const size = String(props.size ?? 'pageTitle');
+    const color = String(props.color ?? 'copyNavy');
+    const token = defaultFoundation.typography[size as keyof typeof defaultFoundation.typography];
+    const y = 1.72 + index * 1.56;
+    const isHero = size === 'heroTitle';
+    addRoundRect(pptx, slide, {
+      x: 0.82,
       y,
-      w: alias === 'circleRadius' ? 1.95 : 3.1,
-      h: alias === 'circleRadius' ? 1.95 : 1.55,
-      fill: { color: C.white, transparency: 2 },
-      line: { color: C.strokeLavender, transparency: 18 },
-      rectRadius: rectRadiusValue(alias)
+      w: 11.7,
+      h: 1.08,
+      fill: { color: isHero ? 'EEF4FF' : C.panel, transparency: 0 },
+      line: { color: isHero ? C.blue : C.border, transparency: 0 }
+    });
+    addText(slide, String(props.text ?? 'PageTitle'), {
+      x: 1.16,
+      y: y + 0.27,
+      w: 6.8,
+      h: 0.36,
+      fontFace: DISPLAY_FONT,
+      fontSize: Math.min(token?.pt ?? 20, 30),
+      bold: true,
+      color: colorFromFoundation(color)
+    });
+    addPill(slide, `${size} / ${token?.pt ?? '?'}pt`, 8.58, y + 0.34, 1.58, C.blue);
+    addPill(slide, color, 10.34, y + 0.34, 1.42, C.teal);
+  });
+}
+
+function renderBadgeSlide(slide: SlideLike, pptx: PptxLike): void {
+  addGalleryBackground(pptx, slide, C.amber);
+  renderHeader(
+    slide,
+    '徽章胶囊：BadgePill 色彩 token',
+    '每个色彩 token 都展示为 pill 状态，保留 alias、hex 和用途说明。',
+    'BadgePill',
+    C.amber
+  );
+  Object.entries(defaultFoundation.colors).forEach(([alias, token], index) => {
+    const col = index % 4;
+    const row = Math.floor(index / 4);
+    const x = 0.76 + col * 3.04;
+    const y = 1.78 + row * 1.44;
+    const hex = token.hex.replace('#', '').toUpperCase();
+    addRoundRect(pptx, slide, { x, y, w: 2.62, h: 1.02 });
+    slide.addShape(pptx.ShapeType.roundRect, {
+      x: x + 0.28,
+      y: y + 0.2,
+      w: 2.06,
+      h: 0.34,
+      fill: { color: hex, transparency: alias === 'white' ? 0 : 12 },
+      line: { color: hex === C.white ? C.border : hex, width: 0.8 },
+      rectRadius: 0.35
     });
     addText(slide, alias, {
-      x: x + (alias === 'circleRadius' ? 0.16 : 0.26),
-      y: y + 0.32,
-      w: alias === 'circleRadius' ? 1.6 : 2.55,
-      h: 0.24,
-      fontSize: 10,
+      x: x + 0.42,
+      y: y + 0.305,
+      w: 1.78,
+      h: 0.12,
+      fontSize: 7.1,
       bold: true,
-      align: alias === 'circleRadius' ? 'center' : 'left',
-      color: C.copyNavy
+      align: 'center',
+      color: isDark(hex) ? C.white : C.ink
     });
-    addText(slide, radiusDisplayValue(token), {
-      x: x + (alias === 'circleRadius' ? 0.16 : 0.26),
-      y: y + 0.68,
-      w: alias === 'circleRadius' ? 1.6 : 2.55,
-      h: 0.18,
-      fontSize: 8,
-      align: alias === 'circleRadius' ? 'center' : 'left',
-      color: C.neutralSlate
+    addText(slide, token.hex, {
+      x: x + 0.28,
+      y: y + 0.66,
+      w: 0.92,
+      h: 0.12,
+      fontSize: 6.5,
+      bold: true,
+      color: C.muted
     });
-    if (alias !== 'circleRadius') {
-      addText(slide, token.usage, {
-        x: x + 0.26,
-        y: y + 1.0,
-        w: 2.5,
+    addText(slide, token.usage, {
+      x: x + 1.16,
+      y: y + 0.62,
+      w: 1.14,
+      h: 0.22,
+      fontSize: 6.1,
+      color: C.muted,
+      align: 'right'
+    });
+  });
+}
+
+function iconLabels(group: CatalogGroup): string[] {
+  const labels = group.items.map((item) => String(item.component.props.label ?? item.component.props.icon ?? 'icon.placeholder'));
+  return [...labels, 'icon.data', 'icon.ai', 'icon.search', 'icon.metric', 'icon.flow', 'icon.alert'].slice(0, 6);
+}
+
+function renderIconTile(slide: SlideLike, pptx: PptxLike, x: number, y: number, label: string, mode: string): void {
+  addRoundRect(pptx, slide, { x, y, w: 3.2, h: 1.28 });
+  slide.addShape(pptx.ShapeType.ellipse, {
+    x: x + 0.32,
+    y: y + 0.28,
+    w: 0.56,
+    h: 0.56,
+    fill: { color: C.mint, transparency: 0 },
+    line: { color: C.teal, width: 1.0 }
+  });
+  addText(slide, 'i', {
+    x: x + 0.32,
+    y: y + 0.42,
+    w: 0.56,
+    h: 0.14,
+    fontSize: 11,
+    bold: true,
+    align: 'center',
+    color: C.ink
+  });
+  addText(slide, label, {
+    x: x + 1.06,
+    y: y + 0.32,
+    w: 1.82,
+    h: 0.18,
+    fontSize: 9.2,
+    bold: true
+  });
+  addText(slide, mode, {
+    x: x + 1.06,
+    y: y + 0.62,
+    w: 1.82,
+    h: 0.14,
+    fontSize: 7,
+    color: C.muted
+  });
+}
+
+function renderIconSlide(slide: SlideLike, pptx: PptxLike, group: CatalogGroup): void {
+  addGalleryBackground(pptx, slide, C.teal);
+  renderHeader(
+    slide,
+    '图标原语：IconPrimitive 状态',
+    '展示 registry id、label 和稳定容器；后续真实图标接入 icon registry。',
+    'IconPrimitive',
+    C.teal
+  );
+  iconLabels(group).forEach((label, index) => {
+    const col = index % 3;
+    const row = Math.floor(index / 3);
+    renderIconTile(slide, pptx, 0.84 + col * 4.08, 1.82 + row * 1.88, label, index < 3 ? 'catalog 变体' : 'registry 占位');
+  });
+}
+
+function renderIconLabelSlide(slide: SlideLike, pptx: PptxLike, group: CatalogGroup): void {
+  addGalleryBackground(pptx, slide, C.coral);
+  renderHeader(
+    slide,
+    '图标标签：IconLabel 排布',
+    '同一 icon + label 支持 horizontal、vertical 和 emphasis 三种展示方式。',
+    'IconLabel',
+    C.coral
+  );
+  const samples = group.items.length > 0 ? group.items : [];
+  const labels = samples.map((item) => String(item.component.props.label ?? 'IconLabel'));
+  const variants = [
+    { label: labels[0] ?? '横向样例', mode: 'horizontal', x: 0.94, y: 1.86, w: 5.1, h: 1.42 },
+    { label: labels[1] ?? '纵向样例', mode: 'vertical', x: 7.08, y: 1.86, w: 4.1, h: 2.0 },
+    { label: labels[2] ?? '强调样例', mode: 'emphasis', x: 2.7, y: 4.55, w: 7.65, h: 1.26 }
+  ];
+  variants.forEach((variant) => {
+    addRoundRect(pptx, slide, {
+      x: variant.x,
+      y: variant.y,
+      w: variant.w,
+      h: variant.h,
+      fill: { color: variant.mode === 'emphasis' ? 'FFF1EF' : C.panel, transparency: 0 },
+      line: { color: variant.mode === 'emphasis' ? C.coral : C.border, width: 1 }
+    });
+    if (variant.mode === 'vertical') {
+      slide.addShape(pptx.ShapeType.ellipse, {
+        x: variant.x + variant.w / 2 - 0.35,
+        y: variant.y + 0.38,
+        w: 0.7,
+        h: 0.7,
+        fill: { color: 'FFE3DE', transparency: 0 },
+        line: { color: C.coral, width: 1 }
+      });
+      addText(slide, 'i', {
+        x: variant.x + variant.w / 2 - 0.35,
+        y: variant.y + 0.56,
+        w: 0.7,
+        h: 0.14,
+        fontSize: 12,
+        bold: true,
+        align: 'center'
+      });
+      addText(slide, variant.label, {
+        x: variant.x + 0.4,
+        y: variant.y + 1.26,
+        w: variant.w - 0.8,
         h: 0.2,
-        fontSize: 7,
-        color: C.neutralSlate
+        fontSize: 10,
+        bold: true,
+        align: 'center'
+      });
+      addText(slide, `${variant.mode} 模式`, {
+        x: variant.x + 0.4,
+        y: variant.y + 1.55,
+        w: variant.w - 0.8,
+        h: 0.14,
+        fontSize: 7.4,
+        color: C.muted,
+        align: 'center'
+      });
+    } else {
+      slide.addShape(pptx.ShapeType.ellipse, {
+        x: variant.x + 0.36,
+        y: variant.y + 0.34,
+        w: 0.58,
+        h: 0.58,
+        fill: { color: 'FFE3DE', transparency: 0 },
+        line: { color: C.coral, width: 1 }
+      });
+      addText(slide, 'i', {
+        x: variant.x + 0.36,
+        y: variant.y + 0.49,
+        w: 0.58,
+        h: 0.12,
+        fontSize: 10,
+        bold: true,
+        align: 'center'
+      });
+      addText(slide, variant.label, {
+        x: variant.x + 1.14,
+        y: variant.y + 0.44,
+        w: variant.w - 1.6,
+        h: 0.2,
+        fontSize: variant.mode === 'emphasis' ? 13 : 10.5,
+        bold: true
+      });
+      addText(slide, `${variant.mode} 模式`, {
+        x: variant.x + 1.14,
+        y: variant.y + 0.76,
+        w: variant.w - 1.6,
+        h: 0.14,
+        fontSize: 7.4,
+        color: C.muted
       });
     }
   });
 }
 
-function renderGenericComponentSlide(slide: any, pptx: any, group: CatalogGroup): void {
-  renderHeader(slide, `${group.type} variants`, '当前组件按 catalog 中声明的 props 逐项展示。');
+function renderMetricSlide(slide: SlideLike, pptx: PptxLike, group: CatalogGroup): void {
+  addGalleryBackground(pptx, slide, C.blue);
+  renderHeader(
+    slide,
+    '指标模块：MetricBlock 变体',
+    '每个卡片只承载一个 value、一个 label 和一条状态条，避免混入图表职责。',
+    'MetricBlock',
+    C.blue
+  );
   group.items.forEach((item, index) => {
-    const col = index % 3;
-    const row = Math.floor(index / 3);
-    const x = 0.95 + col * 4.1;
-    const y = 1.65 + row * 1.75;
-    slide.addShape(pptx.ShapeType.roundRect, {
-      x,
-      y,
-      w: 3.25,
-      h: 1.35,
-      fill: { color: C.white, transparency: 2 },
-      line: { color: 'D4EDFF', transparency: 4 }
-    });
-    addText(slide, item.type, {
-      x: x + 0.25,
-      y: y + 0.24,
-      w: 2.7,
-      h: 0.22,
-      fontSize: 10,
+    const x = 0.9 + index * 4.1;
+    const y = 2.02;
+    const props = item.component.props;
+    addRoundRect(pptx, slide, { x, y, w: 3.35, h: 2.24 });
+    addText(slide, String(props.value ?? '42%'), {
+      x: x + 0.34,
+      y: y + 0.42,
+      w: 2.5,
+      h: 0.5,
+      fontFace: DISPLAY_FONT,
+      fontSize: 29,
       bold: true,
-      color: C.copyNavy
+      color: index === 1 ? C.coral : index === 2 ? C.teal : C.blue
     });
-    addText(slide, JSON.stringify(item.component.props), {
-      x: x + 0.25,
-      y: y + 0.58,
-      w: 2.7,
-      h: 0.32,
-      fontSize: 7,
-      color: C.neutralSlate
+    addText(slide, String(props.label ?? '指标名称'), {
+      x: x + 0.36,
+      y: y + 1.1,
+      w: 2.56,
+      h: 0.2,
+      fontSize: 9.6,
+      bold: true,
+      color: C.muted
+    });
+    slide.addShape(pptx.ShapeType.roundRect, {
+      x: x + 0.36,
+      y: y + 1.68,
+      w: 2.42,
+      h: 0.13,
+      fill: { color: C.faint, transparency: 0 },
+      line: { color: C.faint, transparency: 100 },
+      rectRadius: 0.08
+    });
+    slide.addShape(pptx.ShapeType.roundRect, {
+      x: x + 0.36,
+      y: y + 1.68,
+      w: 1.25 + index * 0.42,
+      h: 0.13,
+      fill: { color: index === 1 ? C.coral : index === 2 ? C.teal : C.blue, transparency: 0 },
+      line: { color: C.white, transparency: 100 },
+      rectRadius: 0.08
     });
   });
 }
 
-function renderComponentSlide(slide: any, pptx: any, group: CatalogGroup): void {
-  addGalleryBackground(pptx, slide);
+function renderBulletSlide(slide: SlideLike, pptx: PptxLike, group: CatalogGroup): void {
+  addGalleryBackground(pptx, slide, C.teal);
+  renderHeader(
+    slide,
+    '项目列表：BulletList 密度',
+    '短列表按密度展示；长段落和多层嵌套应提升到更高层 pattern。',
+    'BulletList',
+    C.teal
+  );
+  group.items.forEach((item, index) => {
+    const x = 0.9 + index * 4.1;
+    const y = 1.86;
+    const items = Array.isArray(item.component.props.items) ? item.component.props.items : [];
+    addRoundRect(pptx, slide, { x, y, w: 3.35, h: 3.75 });
+    addPill(slide, `变体 ${index + 1}`, x + 0.3, y + 0.35, 0.86, C.teal);
+    items.forEach((text, itemIndex) => {
+      const lineY = y + 0.94 + itemIndex * 0.52;
+      slide.addShape(pptx.ShapeType.ellipse, {
+        x: x + 0.38,
+        y: lineY + 0.055,
+        w: 0.1,
+        h: 0.1,
+        fill: { color: C.teal, transparency: 0 },
+        line: { color: C.teal, transparency: 100 }
+      });
+      addText(slide, String(text), {
+        x: x + 0.62,
+        y: lineY,
+        w: 2.28,
+        h: 0.2,
+        fontSize: 9.4,
+        color: C.ink
+      });
+    });
+  });
+}
+
+function renderSurfaceCardSlide(slide: SlideLike, pptx: PptxLike): void {
+  addGalleryBackground(pptx, slide, C.coral);
+  renderHeader(
+    slide,
+    '卡片容器：SurfaceCard 圆角',
+    '用同一内容验证不同 radius 语义，确保容器层级、标题和正文不重叠。',
+    'SurfaceCard',
+    C.coral
+  );
+  Object.entries(defaultFoundation.radius).forEach(([alias, token], index) => {
+    const pos = radiusCardPosition(index);
+    const isCircle = alias === 'circleRadius';
+    if (isCircle) {
+      renderShapeSample(slide, pptx, alias, pos.x + 1.3, pos.y + 0.18, 1.18, 1.18, C.coral);
+      addText(slide, alias, {
+        x: pos.x + 0.9,
+        y: pos.y + 1.48,
+        w: 1.98,
+        h: 0.2,
+        fontSize: 9,
+        bold: true,
+        align: 'center'
+      });
+      return;
+    }
+    addRoundRect(pptx, slide, {
+      ...pos,
+      fill: { color: index % 2 === 0 ? C.panel : 'FFF8F6', transparency: 0 },
+      line: { color: C.coral, transparency: 12, width: 1.0 }
+    }, rectRadiusValue(alias));
+    addText(slide, alias, {
+      x: pos.x + 0.3,
+      y: pos.y + 0.32,
+      w: pos.w - 0.6,
+      h: 0.2,
+      fontSize: 10.2,
+      bold: true
+    });
+    addText(slide, `${radiusDisplayValue(token)} · ${token.usage}`, {
+      x: pos.x + 0.3,
+      y: pos.y + 0.66,
+      w: pos.w - 0.6,
+      h: 0.2,
+      fontSize: 7.2,
+      color: C.muted
+    });
+    addText(slide, '正文短句，验证标题、说明和容器边距。', {
+      x: pos.x + 0.3,
+      y: pos.y + 1.14,
+      w: pos.w - 0.6,
+      h: 0.2,
+      fontSize: 7.8,
+      color: C.ink
+    });
+  });
+}
+
+function renderGenericComponentSlide(slide: SlideLike, pptx: PptxLike, group: CatalogGroup): void {
+  addGalleryBackground(pptx, slide, C.amber);
+  renderHeader(slide, `${group.type} 变体`, '当前组件按 catalog 中声明的 props 逐项展示。', group.type, C.amber);
+  group.items.forEach((item, index) => {
+    const col = index % 3;
+    const row = Math.floor(index / 3);
+    const x = 0.9 + col * 4.1;
+    const y = 1.82 + row * 1.56;
+    addRoundRect(pptx, slide, { x, y, w: 3.35, h: 1.28 });
+    addText(slide, item.type, {
+      x: x + 0.28,
+      y: y + 0.26,
+      w: 2.7,
+      h: 0.2,
+      fontSize: 10,
+      bold: true
+    });
+    addText(slide, JSON.stringify(item.component.props), {
+      x: x + 0.28,
+      y: y + 0.62,
+      w: 2.7,
+      h: 0.28,
+      fontSize: 6.8,
+      color: C.muted
+    });
+  });
+}
+
+function renderComponentSlide(slide: SlideLike, pptx: PptxLike, group: CatalogGroup): void {
   if (group.type === 'TextPrimitive') {
     renderTypographySlide(slide, pptx);
     return;
@@ -645,8 +856,12 @@ function renderComponentSlide(slide: any, pptx: any, group: CatalogGroup): void 
     renderBadgeSlide(slide, pptx);
     return;
   }
-  if (group.type === 'IconPrimitive' || group.type === 'IconLabel') {
+  if (group.type === 'IconPrimitive') {
     renderIconSlide(slide, pptx, group);
+    return;
+  }
+  if (group.type === 'IconLabel') {
+    renderIconLabelSlide(slide, pptx, group);
     return;
   }
   if (group.type === 'MetricBlock') {
@@ -665,10 +880,14 @@ function renderComponentSlide(slide: any, pptx: any, group: CatalogGroup): void 
 }
 
 async function renderGalleryPptx(groupsToRender: CatalogGroup[], out: string): Promise<void> {
-  const PptxGen = pptxgen as unknown as new () => any;
+  const PptxGen = pptxgen as unknown as new () => PptxLike;
   const pptx = new PptxGen();
   pptx.layout = 'LAYOUT_WIDE';
   pptx.author = 'ppt-lord';
+  pptx.subject = '组件多形态样例';
+  pptx.title = catalog.generatedDeckId;
+  pptx.company = 'feipi';
+  pptx.lang = 'zh-CN';
 
   for (const group of groupsToRender) {
     const slide = pptx.addSlide();
@@ -685,7 +904,8 @@ function galleryVariantCount(group: CatalogGroup): number {
     return Object.keys(defaultFoundation.radius).length;
   }
   if (group.type === 'BadgePill') return Object.keys(defaultFoundation.colors).length;
-  if (group.type === 'IconPrimitive' || group.type === 'IconLabel') return Math.max(group.items.length, 6);
+  if (group.type === 'IconPrimitive') return Math.max(group.items.length, 6);
+  if (group.type === 'IconLabel') return Math.max(group.items.length, 3);
   return group.items.length;
 }
 
@@ -740,12 +960,12 @@ await writeFile(
             }))
           }))
         : catalog.components.map((item) => ({
-          type: item.type,
-          maturity: item.maturity,
-          fixture: item.fixture,
-          expectedTexts: item.expectedTexts,
-          props: item.component.props
-        }))
+            type: item.type,
+            maturity: item.maturity,
+            fixture: item.fixture,
+            expectedTexts: item.expectedTexts,
+            props: item.component.props
+          }))
     },
     null,
     2
@@ -760,10 +980,7 @@ if (shouldRenderGallery) {
   warnings.push(...result.warnings);
 }
 const inspection = await inspectPptx(pptxPath);
-await writeFile(
-  inspectPath,
-  `${JSON.stringify({ ...inspection, warnings }, null, 2)}\n`
-);
+await writeFile(inspectPath, `${JSON.stringify({ ...inspection, warnings }, null, 2)}\n`);
 
 if (templatePath) {
   const templateInspection = await inspectPptx(templatePath);

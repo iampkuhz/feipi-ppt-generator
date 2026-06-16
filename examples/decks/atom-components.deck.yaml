@@ -10,7 +10,7 @@ slides:
     components:
       - type: TextPrimitive
         props:
-          text: TextPrimitive sample
+          text: TextPrimitive 样例
           size: bodyText
           color: copyNavy
   - id: atom-shapeprimitive
@@ -28,14 +28,22 @@ slides:
       - type: IconPrimitive
         props:
           icon: icon.placeholder
-          label: IconPrimitive sample
+          label: IconPrimitive 样例
+  - id: atom-iconlabel
+    type: AtomSampleSlide
+    title: IconLabel
+    components:
+      - type: IconLabel
+        props:
+          icon: icon.placeholder
+          label: IconLabel 样例
   - id: atom-pagetitle
     type: AtomSampleSlide
     title: PageTitle
     components:
       - type: PageTitle
         props:
-          text: PageTitle sample
+          text: PageTitle 样例
           size: pageTitle
           color: copyNavy
   - id: atom-badgepill
@@ -44,7 +52,7 @@ slides:
     components:
       - type: BadgePill
         props:
-          text: BadgePill sample
+          text: BadgePill 样例
           size: captionLabel
           color: copyNavy
   - id: atom-metricblock
@@ -53,7 +61,7 @@ slides:
     components:
       - type: MetricBlock
         props:
-          label: MetricBlock label
+          label: MetricBlock 指标
           value: 42%
   - id: atom-bulletlist
     type: AtomSampleSlide
@@ -62,15 +70,15 @@ slides:
       - type: BulletList
         props:
           items:
-            - BulletList first
-            - BulletList second
+            - BulletList 第一项
+            - BulletList 第二项
   - id: atom-surfacecard
     type: AtomSampleSlide
     title: SurfaceCard
     components:
       - type: SurfaceCard
         props:
-          title: Example card
-          body: SurfaceCard body
+          title: 示例卡片
+          body: SurfaceCard 正文
           surface: white
           radius: mdRadius

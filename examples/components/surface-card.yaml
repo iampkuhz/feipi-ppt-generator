@@ -1,6 +1,6 @@
 type: SurfaceCard
 props:
-  title: Example card
-  body: Short supporting text
+  title: 示例卡片
+  body: 短正文说明
   surface: white
   radius: mdRadius
