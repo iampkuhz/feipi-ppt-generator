@@ -15,7 +15,15 @@ export type QualitySummary = {
   blockingFailures: string[];
   warnings: string[];
   artifacts: Record<string, string>;
-  gateDetails: Array<{ name: string; status: GateStatus; message: string; fix?: string }>;
+  gateDetails: Array<{
+    name: string;
+    status: GateStatus;
+    message: string;
+    command?: string;
+    durationMs?: number;
+    fix?: string;
+    artifact?: string;
+  }>;
 };
 
 export async function writeQualitySummary(summary: QualitySummary): Promise<string> {

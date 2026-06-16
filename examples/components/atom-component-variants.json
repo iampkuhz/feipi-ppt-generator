@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "generatedDeckId": "atom-component-variants",
+  "components": [
+    { "type": "TextPrimitive", "layer": "primitive", "maturity": "pptx-rendered", "component": { "type": "TextPrimitive", "props": { "text": "Text body navy", "size": "bodyText", "color": "copyNavy" } }, "expectedTexts": ["Text body navy"], "fixture": "tests/visual/golden/text-primitive.placeholder" },
+    { "type": "TextPrimitive", "layer": "primitive", "maturity": "pptx-rendered", "component": { "type": "TextPrimitive", "props": { "text": "Text subtitle indigo", "size": "subtitleText", "color": "titleIndigo" } }, "expectedTexts": ["Text subtitle indigo"], "fixture": "tests/visual/golden/text-primitive.placeholder" },
+    { "type": "TextPrimitive", "layer": "primitive", "maturity": "pptx-rendered", "component": { "type": "TextPrimitive", "props": { "text": "Text support slate", "size": "supportText", "color": "neutralSlate" } }, "expectedTexts": ["Text support slate"], "fixture": "tests/visual/golden/text-primitive.placeholder" },
+
+    { "type": "ShapePrimitive", "layer": "primitive", "maturity": "pptx-rendered", "component": { "type": "ShapePrimitive", "props": { "surface": "white", "radius": "smRadius" } }, "expectedTexts": [], "fixture": "tests/visual/golden/shape-primitive.placeholder" },
+    { "type": "ShapePrimitive", "layer": "primitive", "maturity": "pptx-rendered", "component": { "type": "ShapePrimitive", "props": { "surface": "white", "radius": "mdRadius" } }, "expectedTexts": [], "fixture": "tests/visual/golden/shape-primitive.placeholder" },
+    { "type": "ShapePrimitive", "layer": "primitive", "maturity": "pptx-rendered", "component": { "type": "ShapePrimitive", "props": { "surface": "white", "radius": "lgRadius" } }, "expectedTexts": [], "fixture": "tests/visual/golden/shape-primitive.placeholder" },
+
+    { "type": "IconPrimitive", "layer": "primitive", "maturity": "pptx-rendered", "component": { "type": "IconPrimitive", "props": { "icon": "icon.placeholder", "label": "Icon cyan accent" } }, "expectedTexts": ["Icon cyan accent"], "fixture": "tests/visual/golden/icon-primitive.placeholder" },
+    { "type": "IconPrimitive", "layer": "primitive", "maturity": "pptx-rendered", "component": { "type": "IconPrimitive", "props": { "icon": "icon.placeholder", "label": "Icon compact label" } }, "expectedTexts": ["Icon compact label"], "fixture": "tests/visual/golden/icon-primitive.placeholder" },
+    { "type": "IconPrimitive", "layer": "primitive", "maturity": "pptx-rendered", "component": { "type": "IconPrimitive", "props": { "icon": "icon.placeholder", "label": "Icon long label sample" } }, "expectedTexts": ["Icon long label sample"], "fixture": "tests/visual/golden/icon-primitive.placeholder" },
+
+    { "type": "PageTitle", "layer": "atom", "maturity": "pptx-rendered", "component": { "type": "PageTitle", "props": { "text": "PageTitle standard", "size": "pageTitle", "color": "copyNavy" } }, "expectedTexts": ["PageTitle standard"], "fixture": "tests/visual/golden/page-title.placeholder" },
+    { "type": "PageTitle", "layer": "atom", "maturity": "pptx-rendered", "component": { "type": "PageTitle", "props": { "text": "PageTitle hero", "size": "heroTitle", "color": "titleIndigo" } }, "expectedTexts": ["PageTitle hero"], "fixture": "tests/visual/golden/page-title.placeholder" },
+    { "type": "PageTitle", "layer": "atom", "maturity": "pptx-rendered", "component": { "type": "PageTitle", "props": { "text": "PageTitle compact", "size": "subtitleText", "color": "copyNavy" } }, "expectedTexts": ["PageTitle compact"], "fixture": "tests/visual/golden/page-title.placeholder" },
+
+    { "type": "BadgePill", "layer": "atom", "maturity": "pptx-rendered", "component": { "type": "BadgePill", "props": { "text": "Badge default", "size": "captionLabel", "color": "copyNavy" } }, "expectedTexts": ["Badge default"], "fixture": "tests/visual/golden/badge-pill.placeholder" },
+    { "type": "BadgePill", "layer": "atom", "maturity": "pptx-rendered", "component": { "type": "BadgePill", "props": { "text": "Badge slate", "size": "captionLabel", "color": "neutralSlate" } }, "expectedTexts": ["Badge slate"], "fixture": "tests/visual/golden/badge-pill.placeholder" },
+    { "type": "BadgePill", "layer": "atom", "maturity": "pptx-rendered", "component": { "type": "BadgePill", "props": { "text": "Badge accent", "size": "captionLabel", "color": "brandViolet" } }, "expectedTexts": ["Badge accent"], "fixture": "tests/visual/golden/badge-pill.placeholder" },
+
+    { "type": "MetricBlock", "layer": "atom", "maturity": "pptx-rendered", "component": { "type": "MetricBlock", "props": { "label": "Metric conversion", "value": "42%" } }, "expectedTexts": ["Metric conversion", "42%"], "fixture": "tests/visual/golden/metric-block.placeholder" },
+    { "type": "MetricBlock", "layer": "atom", "maturity": "pptx-rendered", "component": { "type": "MetricBlock", "props": { "label": "Metric growth", "value": "+18%" } }, "expectedTexts": ["Metric growth", "+18%"], "fixture": "tests/visual/golden/metric-block.placeholder" },
+    { "type": "MetricBlock", "layer": "atom", "maturity": "pptx-rendered", "component": { "type": "MetricBlock", "props": { "label": "Metric latency", "value": "120ms" } }, "expectedTexts": ["Metric latency", "120ms"], "fixture": "tests/visual/golden/metric-block.placeholder" },
+
+    { "type": "BulletList", "layer": "atom", "maturity": "pptx-rendered", "component": { "type": "BulletList", "props": { "items": ["One bullet", "Two bullet"] } }, "expectedTexts": ["One bullet", "Two bullet"], "fixture": "tests/visual/golden/bullet-list.placeholder" },
+    { "type": "BulletList", "layer": "atom", "maturity": "pptx-rendered", "component": { "type": "BulletList", "props": { "items": ["Short", "Medium statement", "Longer statement sample"] } }, "expectedTexts": ["Short", "Medium statement", "Longer statement sample"], "fixture": "tests/visual/golden/bullet-list.placeholder" },
+    { "type": "BulletList", "layer": "atom", "maturity": "pptx-rendered", "component": { "type": "BulletList", "props": { "items": ["Single bullet"] } }, "expectedTexts": ["Single bullet"], "fixture": "tests/visual/golden/bullet-list.placeholder" },
+
+    { "type": "SurfaceCard", "layer": "atom", "maturity": "pptx-rendered", "component": { "type": "SurfaceCard", "props": { "title": "Card white", "body": "White surface sample", "surface": "white", "radius": "mdRadius" } }, "expectedTexts": ["Card white", "White surface sample"], "fixture": "tests/visual/golden/surface-card.placeholder" },
+    { "type": "SurfaceCard", "layer": "atom", "maturity": "pptx-rendered", "component": { "type": "SurfaceCard", "props": { "title": "Card compact", "body": "Small radius sample", "surface": "white", "radius": "smRadius" } }, "expectedTexts": ["Card compact", "Small radius sample"], "fixture": "tests/visual/golden/surface-card.placeholder" },
+    { "type": "SurfaceCard", "layer": "atom", "maturity": "pptx-rendered", "component": { "type": "SurfaceCard", "props": { "title": "Card large", "body": "Large radius sample", "surface": "white", "radius": "lgRadius" } }, "expectedTexts": ["Card large", "Large radius sample"], "fixture": "tests/visual/golden/surface-card.placeholder" }
+  ]
+}

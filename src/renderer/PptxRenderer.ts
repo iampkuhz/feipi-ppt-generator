@@ -35,7 +35,7 @@ export class PptxRenderer implements Renderer {
       const rect = this.layout.titleRect(0);
       context.slide.addText(slideSpec.title, {
         ...rect,
-        fontFace: 'Arial',
+        fontFace: this.theme.fontFace(),
         fontSize: this.theme.fontSize('pageTitle'),
         color: this.theme.color('copyNavy'),
         bold: true
@@ -60,7 +60,7 @@ export class PptxRenderer implements Renderer {
         const rect = this.layout.titleRect(index);
         context.slide.addText(String(props.text ?? ''), {
           ...rect,
-          fontFace: 'Arial',
+          fontFace: this.theme.fontFace(),
           fontSize: this.theme.fontSize(String(props.size ?? 'pageTitle')),
           color: this.theme.color(String(props.color ?? 'copyNavy')),
           bold: component.type === 'PageTitle'
@@ -73,10 +73,110 @@ export class PptxRenderer implements Renderer {
         items.forEach((item, itemIndex) => {
           context.slide.addText(`• ${String(item)}`, {
             ...this.layout.contentRect(itemIndex),
-            fontFace: 'Arial',
+            fontFace: this.theme.fontFace(),
             fontSize: this.theme.fontSize('bodyText'),
             color: this.theme.color('neutralSlate')
           });
+        });
+        return;
+      }
+
+      if (component.type === 'ShapePrimitive') {
+        const rect = this.layout.componentRect(index);
+        context.slide.addShape(context.pptx.ShapeType.roundRect, {
+          ...rect,
+          fill: { color: this.theme.color(String(props.surface ?? 'white')), transparency: 8 },
+          line: { color: this.theme.color('strokeLavender'), transparency: 20 },
+          rectRadius: this.theme.rectRadius(String(props.radius ?? 'mdRadius'))
+        });
+        return;
+      }
+
+      if (component.type === 'IconPrimitive' || component.type === 'IconLabel') {
+        const rect = this.layout.componentRect(index);
+        const label = String(props.label ?? props.icon ?? 'icon.placeholder');
+        context.slide.addText(`icon.placeholder ${label}`, {
+          ...rect,
+          fontFace: this.theme.fontFace(),
+          fontSize: this.theme.fontSize('bodyText'),
+          color: this.theme.color('copyNavy')
+        });
+        return;
+      }
+
+      if (component.type === 'BadgePill') {
+        const rect = this.layout.componentRect(index);
+        context.slide.addShape(context.pptx.ShapeType.roundRect, {
+          ...rect,
+          w: 2.2,
+          h: 0.42,
+          fill: { color: this.theme.color('white'), transparency: 0 },
+          line: { color: this.theme.color('strokeLavender'), transparency: 15 },
+          rectRadius: this.theme.rectRadius('pillRadius')
+        });
+        context.slide.addText(String(props.text ?? ''), {
+          x: rect.x + 0.16,
+          y: rect.y + 0.08,
+          w: 1.9,
+          h: 0.2,
+          fontFace: this.theme.fontFace(),
+          fontSize: this.theme.fontSize(String(props.size ?? 'captionLabel')),
+          color: this.theme.color(String(props.color ?? 'copyNavy')),
+          bold: true
+        });
+        return;
+      }
+
+      if (component.type === 'MetricBlock') {
+        const rect = this.layout.cardRect(index);
+        context.slide.addText(String(props.value ?? ''), {
+          x: rect.x,
+          y: rect.y,
+          w: rect.w,
+          h: 0.36,
+          fontFace: this.theme.fontFace(),
+          fontSize: this.theme.fontSize('subtitleText'),
+          color: this.theme.color('copyNavy'),
+          bold: true
+        });
+        context.slide.addText(String(props.label ?? ''), {
+          x: rect.x,
+          y: rect.y + 0.42,
+          w: rect.w,
+          h: 0.26,
+          fontFace: this.theme.fontFace(),
+          fontSize: this.theme.fontSize('supportText'),
+          color: this.theme.color('neutralSlate')
+        });
+        return;
+      }
+
+      if (component.type === 'SurfaceCard') {
+        const rect = this.layout.cardRect(index);
+        context.slide.addShape(context.pptx.ShapeType.roundRect, {
+          ...rect,
+          fill: { color: this.theme.color(String(props.surface ?? 'white')), transparency: 0 },
+          line: { color: this.theme.color('strokeLavender'), transparency: 15 },
+          rectRadius: this.theme.rectRadius(String(props.radius ?? 'mdRadius'))
+        });
+        context.slide.addText(String(props.title ?? ''), {
+          x: rect.x + 0.22,
+          y: rect.y + 0.12,
+          w: rect.w - 0.44,
+          h: 0.24,
+          fontFace: this.theme.fontFace(),
+          fontSize: this.theme.fontSize('bodyText'),
+          color: this.theme.color('copyNavy'),
+          bold: true
+        });
+        context.slide.addText(String(props.body ?? ''), {
+          x: rect.x + 0.22,
+          y: rect.y + 0.42,
+          w: rect.w - 0.44,
+          h: 0.22,
+          fontFace: this.theme.fontFace(),
+          fontSize: this.theme.fontSize('supportText'),
+          color: this.theme.color('neutralSlate')
         });
         return;
       }

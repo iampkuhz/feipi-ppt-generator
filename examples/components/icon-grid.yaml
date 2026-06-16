@@ -1,0 +1,7 @@
+type: IconGrid
+props:
+  items:
+    - icon: icon.placeholder
+      label: Example one
+    - icon: icon.placeholder
+      label: Example two

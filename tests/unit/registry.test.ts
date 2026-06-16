@@ -20,6 +20,7 @@ describe('component registry', () => {
       version: '0.1.0',
       layer: 'atom' as const,
       status: 'experimental' as const,
+      maturity: 'schema-only' as const,
       propsSchema: z.object({}),
       allowedVariants: [],
       allowedTokens: [],

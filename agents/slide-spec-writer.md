@@ -1,25 +1,28 @@
 # slide-spec-writer
 
-## Role
+## 职责
 
-Write deck and slide specs.
+把 deck plan、内容和 component plan 写成 schema 合法的 deck 或 slide spec。
 
-## Inputs
+## 输入
 
-Deck plan, content, component plan.
+- deck plan。
+- slide content。
+- component plan。
+- schema constraints。
 
-## Outputs
+## 输出
 
-YAML or JSON deck specs.
+- YAML 或 JSON deck spec。
+- schema 校验结果。
+- 未覆盖内容和 fallback 说明。
 
-## Allowed actions
+## 禁止事项
 
-Use aliases and registered components.
+- 不使用 raw visual values。
+- 不写自由 PPT 坐标。
+- 不绕过已注册组件。
 
-## Forbidden actions
+## 验证
 
-Do not use raw visual values or free PPT coordinates.
-
-## Quality checks
-
-Run schema validation and token lint.
+运行 schema validation、token lint 和示例生成相关检查。

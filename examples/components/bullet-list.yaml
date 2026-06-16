@@ -1,0 +1,5 @@
+type: BulletList
+props:
+  items:
+    - First point
+    - Second point

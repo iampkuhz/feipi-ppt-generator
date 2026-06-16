@@ -1,0 +1,76 @@
+id: atom-components
+title: 原子组件样例
+templateId: default
+foundation: default
+size: wide-16-9
+slides:
+  - id: atom-textprimitive
+    type: AtomSampleSlide
+    title: TextPrimitive
+    components:
+      - type: TextPrimitive
+        props:
+          text: TextPrimitive sample
+          size: bodyText
+          color: copyNavy
+  - id: atom-shapeprimitive
+    type: AtomSampleSlide
+    title: ShapePrimitive
+    components:
+      - type: ShapePrimitive
+        props:
+          surface: white
+          radius: mdRadius
+  - id: atom-iconprimitive
+    type: AtomSampleSlide
+    title: IconPrimitive
+    components:
+      - type: IconPrimitive
+        props:
+          icon: icon.placeholder
+          label: IconPrimitive sample
+  - id: atom-pagetitle
+    type: AtomSampleSlide
+    title: PageTitle
+    components:
+      - type: PageTitle
+        props:
+          text: PageTitle sample
+          size: pageTitle
+          color: copyNavy
+  - id: atom-badgepill
+    type: AtomSampleSlide
+    title: BadgePill
+    components:
+      - type: BadgePill
+        props:
+          text: BadgePill sample
+          size: captionLabel
+          color: copyNavy
+  - id: atom-metricblock
+    type: AtomSampleSlide
+    title: MetricBlock
+    components:
+      - type: MetricBlock
+        props:
+          label: MetricBlock label
+          value: 42%
+  - id: atom-bulletlist
+    type: AtomSampleSlide
+    title: BulletList
+    components:
+      - type: BulletList
+        props:
+          items:
+            - BulletList first
+            - BulletList second
+  - id: atom-surfacecard
+    type: AtomSampleSlide
+    title: SurfaceCard
+    components:
+      - type: SurfaceCard
+        props:
+          title: Example card
+          body: SurfaceCard body
+          surface: white
+          radius: mdRadius

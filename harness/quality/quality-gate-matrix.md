@@ -9,7 +9,7 @@
 | `src/renderer/**` | `renderer` | typecheck, unitTests, generateBasicDeck, pptxInspect |
 | `assets/templates/**` | `template-pack` | manifestValidate, assetCheck, examplesValidate |
 | `examples/**` | `schema` | examplesValidate, generateBasicDeck |
-| `scripts/preview/**` | `visual-harness` | typecheck, previewExportCheck |
+| `src/cli/commands/render-preview.ts` | `visual-harness` | typecheck, previewStructureCheck |
 | `scripts/quality/**` | `hook-runtime` | typecheck, unitTests, doctor, repoStructure |
 | `.claude/**` | `hook-runtime` | bashSyntax, hookSelfTest, doctor, repoStructure |
 | `.codex/**` | `hook-runtime` | bashSyntax, hookSelfTest, doctor, repoStructure |

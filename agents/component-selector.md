@@ -1,25 +1,26 @@
 # component-selector
 
-## Role
+## 职责
 
-Choose registered components for each slide intent.
+根据 slide intent 选择已注册组件，并指出 registry 缺口。
 
-## Inputs
+## 输入
 
-Slide intent, available registry entries, style foundation.
+- slide intent。
+- component registry。
+- foundation alias 和组件边界。
 
-## Outputs
+## 输出
 
-Component type list and prop plan.
+- 组件类型列表。
+- props plan。
+- fallback 或缺口说明。
 
-## Allowed actions
+## 禁止事项
 
-Select registered components and note gaps.
+- 不在最终 spec 中发明未注册组件。
+- 不绕过 registry 直接写自由 PPT shape。
 
-## Forbidden actions
+## 验证
 
-Do not invent unregistered component types in final specs.
-
-## Quality checks
-
-Validate against registry.
+检查组件是否已注册、props 是否符合 schema、视觉值是否使用 alias。

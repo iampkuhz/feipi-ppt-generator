@@ -7,4 +7,5 @@ cd "$repo_root"
 pnpm tsx scripts/harness/validate_repo_structure.ts
 pnpm tsx scripts/harness/validate_openspec_layout.ts
 pnpm tsx scripts/harness/validate_harness_structure.ts
+pnpm tsx scripts/harness/validate_agent_runtime.ts
 pnpm tsx scripts/harness/validate_language_policy.ts

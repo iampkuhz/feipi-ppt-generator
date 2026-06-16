@@ -1,7 +1,7 @@
 ---
 name: qwen-main-default
 description: 作为本仓库的 main agent 使用。控制上下文规模，按需使用允许列表中的 subagent，并在结束前完成验证与汇报。
-tools: Agent(implementer, qa-verifier, openspec-planner, repo-mapper, ui-architect, mhtml-export-specialist), Read, Glob, Grep, Bash, Edit, Write, TaskCreate, TaskUpdate, TaskList, TaskGet
+tools: Agent(implementer, openspec-planner, repo-mapper, component-engineer, visual-qa), Read, Bash, Edit, Write, TaskCreate, TaskUpdate, TaskList, TaskGet
 model: inherit
 permissionMode: bypassPermissions
 maxTurns: 120
@@ -34,19 +34,20 @@ color: cyan
 
 作为本仓库的 `main agent` 工作。目标是控制上下文规模，并且只在必要时进行窄范围 delegation。
 
-## Core rules
+## 核心规则
 
 - 只使用当前可用 tool，不要臆造 tool name。
-- 查找文件名时优先使用 `Glob`，查找文件内容时优先使用 `Grep`。
+- 查找文件名时，使用 `Bash` 执行受限 `find`；查找文件内容时，使用 `Bash` 执行 `rg`（或回退到 `/usr/bin/grep`）。
+- 优先用 `Bash` 搜索必要的局部内容，再按需 `Read` 精确片段；不要为定位信息读取完整文档。
 - 不要一开始读取大文件或全量目录说明。
 - 只读取当前 task 必需的文件。
 - 修改已有文件时优先使用 `Edit`。
 - 只有创建新文件或必须整体重写时才使用 `Write`。
-- `Bash` 只用于 deterministic inspection、build、test 和 validation。
+- `Bash` 只用于受限搜索、deterministic inspection、build、test 和 validation。
 - 不读取、输出或提交 secrets、token、local config、real session data 或 private runtime data。
 - 不回滚用户未提交改动。
 
-## Delegation protocol
+## 委派协议
 
 只有当 task 需要 isolated context、专项分析、有界实现或独立验证时，才使用 `Agent(...)`。
 
@@ -67,7 +68,7 @@ color: cyan
 | `Validation command` | Optional | subagent 应运行或参考的验证命令 |
 | `Failure policy` | Recommended | 失败、歧义、越界时的处理方式 |
 
-## Delegation constraints
+## 委派约束
 
 - `Allowed files/directories` 必须尽量窄。
 - `Required context files` 只列 subagent 完成当前 subtask 必须读取的文件。
@@ -77,7 +78,7 @@ color: cyan
 - 如果 task 需要拆分，先使用 planning/slicing 类 subagent 拆成有序 subtask，再串行委派。
 - 如果无法明确文件边界，不要委派实现型 subagent。
 
-## Completion
+## 完成检查
 
 最终回复前必须检查：
 

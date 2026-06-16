@@ -2,12 +2,38 @@ schemaVersion: 1
 status: canonical-registry
 notes:
   - 本文件是 agent 职责和委派契约真源。
-  - 当前不会自动生成 .claude、.codex 或 agents 目录内容。
+  - 当前不会自动生成 .claude、.codex 或 agents 目录内容，但 doctor 会校验 active 运行面不漂移。
   - 新增或修改 agent 行为必须通过 OpenSpec change。
 generatedOutputs:
   claudeAgents: .claude/agents/
   codexAgents: .codex/agents/
   sharedDocs: agents/
+runtime:
+  defaultClaudeAgent: qwen-main-default
+  activeAgents:
+    - qwen-main-default
+    - implementer
+    - repo-mapper
+    - openspec-planner
+    - component-engineer
+    - visual-qa
+  deferredAgents:
+    - deck-planner
+    - content-structurer
+    - component-selector
+    - slide-spec-writer
+    - asset-curator
+    - layout-engineer
+    - main-default
+  sharedDocAgents:
+    - asset-curator
+    - component-engineer
+    - component-selector
+    - content-structurer
+    - deck-planner
+    - slide-spec-writer
+    - spec-maintainer
+    - visual-qa
 handoffContract:
   requiredFields:
     - goal
@@ -21,6 +47,64 @@ handoffContract:
     - validationCommand
     - failurePolicy
 agents:
+  qwen-main-default:
+    role: 主协调 agent，控制上下文规模并按需委派
+    trigger: 仓库内默认 main agent 会话
+    requiredInputs:
+      - 用户目标
+      - 当前 change id
+      - 最小必要上下文
+    allowedScope:
+      - AGENTS.md
+      - CLAUDE.md
+      - harness/**
+      - openspec/**
+      - src/**
+      - scripts/**
+      - tests/**
+      - docs/**
+    forbiddenScope:
+      - .env*
+      - .mcp.json
+      - .claude/settings.local.json
+      - .codex/local.json
+      - tmp/agent_logs/**
+      - tmp/quality/**
+    outputContract: 汇总 changed files、validation、risks 和 git status。
+    validationResponsibility: 选择与改动范围匹配的最小验证，不预加载完整 skill 或 registry。
+  main-default:
+    role: 历史 main agent 兼容入口
+    trigger: 旧配置仍指向 main-default 时
+    requiredInputs:
+      - 用户目标
+      - 最小必要上下文
+    allowedScope:
+      - AGENTS.md
+      - harness/agents/registry.yaml
+      - .claude/settings.json
+    forbiddenScope:
+      - .env*
+      - tmp/**
+      - src/**
+    outputContract: 提醒切换到 qwen-main-default，并说明未执行原因。
+    validationResponsibility: 不承担新实现验证。
+  implementer:
+    role: 执行单个 scoped implementation task
+    trigger: main agent 已明确 Goal、Task id、Allowed files、Expected output 和 Validation command
+    requiredInputs:
+      - goal
+      - task id
+      - allowed files
+      - expected output
+    allowedScope:
+      - 由 handoff payload 限定
+    forbiddenScope:
+      - payload 之外路径
+      - .env*
+      - tmp/agent_logs/**
+      - tmp/quality/**
+    outputContract: 返回 PASS、FAIL 或 BLOCKED，列出 changed files、key changes、validation 和 risks。
+    validationResponsibility: 只运行 task 相关的 deterministic validation。
   repo-mapper:
     role: 仓库结构和依赖关系盘点
     trigger: 需要理解目录、模块边界或变更影响面
@@ -79,6 +163,23 @@ agents:
       - tmp/**
     outputContract: 返回 deck outline、recipe 建议和缺失输入。
     validationResponsibility: 检查叙事结构和必要章节是否完整。
+  asset-curator:
+    role: 审阅脱敏模板资产并提出 alias、registry 或 manifest 候选
+    trigger: 模板抽取结果需要提升为通用资产能力
+    requiredInputs:
+      - extraction report
+      - asset folders
+      - template pack constraints
+    allowedScope:
+      - assets/templates/**
+      - docs/template-pack.md
+      - src/foundation/**
+    forbiddenScope:
+      - assets/templates/**/extracted/raw/**
+      - .env*
+      - tmp/agent_logs/**
+    outputContract: 输出资产命名建议、icon tag、alias 建议和脱敏风险。
+    validationResponsibility: 检查 stable id、generic name 和脱敏边界。
   content-structurer:
     role: 将原始材料结构化为 slide 内容
     trigger: deck plan 已存在且需要生成 slide-level 内容
@@ -130,6 +231,24 @@ agents:
       - tmp/**
     outputContract: 输出 deck 或 slide YAML，并列出 schema 校验结果。
     validationResponsibility: 运行示例校验或 schema 单测。
+  layout-engineer:
+    role: 维护布局规则、文本测量和碰撞约束
+    trigger: OpenSpec task 授权 renderer/layout 层变更
+    requiredInputs:
+      - task id
+      - allowed files
+      - expected layout contract
+    allowedScope:
+      - src/renderer/**
+      - src/layout/**
+      - tests/renderer/**
+      - tests/e2e/**
+    forbiddenScope:
+      - assets/templates/**
+      - tmp/**
+      - src/foundation/default.foundation.json
+    outputContract: 返回布局规则、影响面、验证结果和风险。
+    validationResponsibility: 运行 renderer/layout 相关测试和 deterministic inspection。
   component-engineer:
     role: 实现组件、组件 schema 或 registry 映射
     trigger: OpenSpec task 授权组件层变更
@@ -168,3 +287,21 @@ agents:
       - assets/templates/**/extracted/raw/**
     outputContract: 输出 PASS、FAIL 或 BLOCKED 及证据路径。
     validationResponsibility: 不主观评分，只引用确定性 artifact。
+  spec-maintainer:
+    role: 维护 OpenSpec-style change 和长期 specs
+    trigger: 已完成实现需要归档或同步长期规格
+    requiredInputs:
+      - proposal
+      - design
+      - tasks
+      - qa report
+    allowedScope:
+      - openspec/changes/**
+      - openspec/specs/**
+      - docs/acceptance/**
+    forbiddenScope:
+      - src/**
+      - tests/**
+      - tmp/**
+    outputContract: 输出 spec delta、归档更新、未完成风险和后续 TODO。
+    validationResponsibility: 校验 requirement、scenario、task、validation 和 qa-report 完整性。

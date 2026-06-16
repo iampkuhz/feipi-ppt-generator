@@ -2,12 +2,14 @@ import { z } from 'zod';
 import type { ComponentSpec } from '../schema/component.schema.js';
 
 export type ComponentLayer = 'primitive' | 'atom' | 'composite' | 'pattern';
+export type ComponentMaturity = 'schema-only' | 'pptx-rendered' | 'visually-checkable' | 'stable';
 
 export type ComponentRegistryEntry<TProps = unknown> = {
   type: string;
   version: string;
   layer: ComponentLayer;
   status: 'experimental' | 'stable' | 'deprecated';
+  maturity: ComponentMaturity;
   propsSchema: z.ZodType<TProps>;
   allowedVariants: string[];
   allowedTokens: string[];
@@ -52,6 +54,7 @@ const textPropsSchema = z.object({
 });
 
 const shapePropsSchema = z.object({
+  surface: z.string().optional(),
   radius: z.string().optional()
 });
 
@@ -70,6 +73,13 @@ const metricPropsSchema = z.object({
   delta: z.string().optional()
 });
 
+const surfaceCardPropsSchema = z.object({
+  title: z.string().optional(),
+  body: z.string().optional(),
+  surface: z.string().optional(),
+  radius: z.string().optional()
+});
+
 const genericPropsSchema = z.record(z.string(), z.unknown());
 
 export function createDefaultComponentRegistry(): ComponentRegistry {
@@ -80,10 +90,11 @@ export function createDefaultComponentRegistry(): ComponentRegistry {
       version: '0.1.0',
       layer: 'primitive',
       status: 'experimental',
+      maturity: 'pptx-rendered',
       propsSchema: textPropsSchema,
       allowedVariants: [],
       allowedTokens: ['pageTitle', 'bodyText', 'copyNavy', 'neutralSlate'],
-      examples: ['examples/components/page-title.yaml'],
+      examples: ['examples/components/text-primitive.yaml'],
       visualFixtures: ['tests/visual/golden/text-primitive.placeholder'],
       usageBoundary: '仅绘制基础文本，不负责语义结构。',
       description: '最低层文本绘制原语。'
@@ -93,10 +104,11 @@ export function createDefaultComponentRegistry(): ComponentRegistry {
       version: '0.1.0',
       layer: 'primitive',
       status: 'experimental',
+      maturity: 'pptx-rendered',
       propsSchema: shapePropsSchema,
       allowedVariants: [],
-      allowedTokens: ['mdRadius', 'smRadius', 'lgRadius'],
-      examples: [],
+      allowedTokens: ['white', 'strokeLavender', 'mdRadius', 'smRadius', 'lgRadius'],
+      examples: ['examples/components/shape-primitive.yaml'],
       visualFixtures: ['tests/visual/golden/shape-primitive.placeholder'],
       usageBoundary: '仅绘制基础形状，不承载业务语义。',
       description: '最低层形状绘制原语。'
@@ -106,10 +118,11 @@ export function createDefaultComponentRegistry(): ComponentRegistry {
       version: '0.1.0',
       layer: 'primitive',
       status: 'experimental',
+      maturity: 'pptx-rendered',
       propsSchema: iconPropsSchema,
       allowedVariants: [],
       allowedTokens: ['cyanAccent'],
-      examples: ['examples/components/icon-label.yaml'],
+      examples: ['examples/components/icon-primitive.yaml'],
       visualFixtures: ['tests/visual/golden/icon-primitive.placeholder'],
       usageBoundary: '只能使用 icon registry 中的稳定 id。',
       description: '由 icon registry 驱动的 icon 绘制原语。'
@@ -119,6 +132,7 @@ export function createDefaultComponentRegistry(): ComponentRegistry {
       version: '0.1.0',
       layer: 'atom',
       status: 'experimental',
+      maturity: 'pptx-rendered',
       propsSchema: textPropsSchema,
       allowedVariants: [],
       allowedTokens: ['pageTitle', 'heroTitle', 'copyNavy'],
@@ -132,6 +146,7 @@ export function createDefaultComponentRegistry(): ComponentRegistry {
       version: '0.1.0',
       layer: 'atom',
       status: 'experimental',
+      maturity: 'pptx-rendered',
       propsSchema: textPropsSchema.extend({ color: z.string().optional() }),
       allowedVariants: ['default', 'accent'],
       allowedTokens: ['captionLabel', 'pillRadius'],
@@ -145,6 +160,7 @@ export function createDefaultComponentRegistry(): ComponentRegistry {
       version: '0.1.0',
       layer: 'atom',
       status: 'experimental',
+      maturity: 'pptx-rendered',
       propsSchema: iconPropsSchema,
       allowedVariants: ['horizontal', 'vertical'],
       allowedTokens: ['bodyText', 'cyanAccent'],
@@ -158,6 +174,7 @@ export function createDefaultComponentRegistry(): ComponentRegistry {
       version: '0.1.0',
       layer: 'atom',
       status: 'experimental',
+      maturity: 'pptx-rendered',
       propsSchema: metricPropsSchema,
       allowedVariants: ['default', 'compact'],
       allowedTokens: ['subtitleText', 'supportText', 'copyNavy', 'neutralSlate'],
@@ -171,23 +188,39 @@ export function createDefaultComponentRegistry(): ComponentRegistry {
       version: '0.1.0',
       layer: 'atom',
       status: 'experimental',
+      maturity: 'pptx-rendered',
       propsSchema: bulletListPropsSchema,
       allowedVariants: ['default'],
       allowedTokens: ['bodyText', 'neutralSlate'],
-      examples: [],
+      examples: ['examples/components/bullet-list.yaml'],
       visualFixtures: ['tests/visual/golden/bullet-list.placeholder'],
       usageBoundary: '用于短列表，不处理多层嵌套结构。',
       description: '简单项目符号列表原子。'
+    },
+    {
+      type: 'SurfaceCard',
+      version: '0.1.0',
+      layer: 'atom',
+      status: 'experimental',
+      maturity: 'pptx-rendered',
+      propsSchema: surfaceCardPropsSchema,
+      allowedVariants: ['default'],
+      allowedTokens: ['white', 'strokeLavender', 'copyNavy', 'neutralSlate', 'mdRadius'],
+      examples: ['examples/components/surface-card.yaml'],
+      visualFixtures: ['tests/visual/golden/surface-card.placeholder'],
+      usageBoundary: '用于承载短标题和短正文，不处理复杂嵌套布局。',
+      description: '基础内容卡片原子。'
     },
     {
       type: 'IconGrid',
       version: '0.1.0',
       layer: 'composite',
       status: 'experimental',
+      maturity: 'schema-only',
       propsSchema: genericPropsSchema,
       allowedVariants: ['default'],
       allowedTokens: ['mdGap', 'bodyText'],
-      examples: ['examples/slides/icon-grid.slide.yaml'],
+      examples: ['examples/components/icon-grid.yaml'],
       visualFixtures: ['tests/visual/golden/icon-grid.placeholder'],
       usageBoundary: '用于多组 icon-label 排列，不负责整页叙事。',
       description: 'icon-label 项网格组合组件。'
@@ -197,6 +230,7 @@ export function createDefaultComponentRegistry(): ComponentRegistry {
       version: '0.1.0',
       layer: 'composite',
       status: 'experimental',
+      maturity: 'schema-only',
       propsSchema: genericPropsSchema,
       allowedVariants: ['placeholder'],
       allowedTokens: ['brandViolet', 'brandBlue', 'cyanAccent'],

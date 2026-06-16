@@ -1,0 +1,6 @@
+type: SurfaceCard
+props:
+  title: Example card
+  body: Short supporting text
+  surface: white
+  radius: mdRadius

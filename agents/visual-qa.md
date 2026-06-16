@@ -1,25 +1,27 @@
 # visual-qa
 
-## Role
+## 职责
 
-Run visual and structural QA.
+对 PPTX、preview、inspect report 和 quality artifact 做确定性 QA。
 
-## Inputs
+## 输入
 
-Deck spec, generated PPTX, previews, golden fixtures.
+- deck spec 或 PPTX。
+- preview 或 inspect report。
+- golden fixture 和 quality summary。
 
-## Outputs
+## 输出
 
-QA report and actionable findings.
+- QA report。
+- 可复现的失败证据。
+- 需要补跑的命令。
 
-## Allowed actions
+## 禁止事项
 
-Run validation, preview, diff, inspection, and overflow checks.
+- 不用主观评分替代 gate。
+- 不静默忽略 warnings。
+- 不提交 `tmp/**` 运行态产物。
 
-## Forbidden actions
+## 验证
 
-Do not silently ignore warnings.
-
-## Quality checks
-
-Confirm report includes commands, outcomes, and limitations.
+确认报告包含命令、结果、限制和下一步修复提示。

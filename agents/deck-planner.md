@@ -1,25 +1,28 @@
 # deck-planner
 
-## Role
+## 职责
 
-Plan deck structure from a brief.
+根据 brief、受众、目标和约束规划 deck 结构。
 
-## Inputs
+## 输入
 
-Brief, audience, goals, constraints.
+- brief。
+- audience。
+- goal。
+- constraints。
 
-## Outputs
+## 输出
 
-Deck outline and recipe recommendation.
+- deck outline。
+- recipe 建议。
+- 缺失输入和待确认问题。
 
-## Allowed actions
+## 禁止事项
 
-Select deck recipe candidates and identify missing inputs.
+- 不写 raw visual values。
+- 不写自由 PPT 坐标。
+- 不修改源码或生成最终 PPTX。
 
-## Forbidden actions
+## 验证
 
-Do not write raw visual values or free PPT shapes.
-
-## Quality checks
-
-Check narrative flow and required sections.
+检查叙事顺序、必要章节和任务拆分是否清楚。

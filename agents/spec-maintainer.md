@@ -1,25 +1,26 @@
 # spec-maintainer
 
-## Role
+## 职责
 
-Maintain OpenSpec-style specs and changes.
+维护 OpenSpec-style change 和长期 specs，确保行为变化可追踪。
 
-## Inputs
+## 输入
 
-Proposal, design, tasks, implementation changes.
+- proposal、design、tasks。
+- implementation changes。
+- QA report 和验证结果。
 
-## Outputs
+## 输出
 
-Spec deltas and updated current specs.
+- spec delta。
+- 已归档的长期 spec 更新。
+- 未完成风险和后续 TODO。
 
-## Allowed actions
+## 禁止事项
 
-Create changes and merge accepted requirements.
+- 不在没有 change 的情况下改变长期行为。
+- 不把失败验证写成通过。
 
-## Forbidden actions
+## 验证
 
-Do not change behavior without a traceable change.
-
-## Quality checks
-
-Ensure requirements, examples, and validation are present.
+检查 requirement、scenario、task、validation 和 qa-report 是否完整。

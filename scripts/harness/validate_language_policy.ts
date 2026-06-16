@@ -1,4 +1,5 @@
-import { readFile } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 const requiredChineseFiles = [
   'README.md',
@@ -8,13 +9,38 @@ const requiredChineseFiles = [
   'openspec/README.md'
 ];
 
+const requiredChineseDirs = ['agents', 'skills', '.claude/agents', '.claude/skills', '.codex/agents', 'harness'];
+const checkedExtensions = new Set(['.md', '.toml']);
+
 function hasChinese(text: string): boolean {
   return /[\u4e00-\u9fff]/.test(text);
 }
 
+function hasCheckedExtension(path: string): boolean {
+  return [...checkedExtensions].some((extension) => path.endsWith(extension));
+}
+
+async function collectDocFiles(dir: string): Promise<string[]> {
+  const entries = await readdir(dir, { withFileTypes: true }).catch(() => []);
+  const files: string[] = [];
+  for (const entry of entries) {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...(await collectDocFiles(path)));
+    } else if (entry.isFile() && hasCheckedExtension(path)) {
+      files.push(path);
+    }
+  }
+  return files.sort();
+}
+
 export async function validateLanguagePolicy(): Promise<string[]> {
   const errors: string[] = [];
-  for (const path of requiredChineseFiles) {
+  const docFiles = [
+    ...requiredChineseFiles,
+    ...(await Promise.all(requiredChineseDirs.map((dir) => collectDocFiles(dir)))).flat()
+  ];
+  for (const path of [...new Set(docFiles)]) {
     try {
       const text = await readFile(path, 'utf8');
       if (!hasChinese(text)) errors.push(`缺少中文内容：${path}`);

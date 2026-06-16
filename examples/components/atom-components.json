@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "generatedDeckId": "atom-components",
+  "components": [
+    {
+      "type": "TextPrimitive",
+      "layer": "primitive",
+      "maturity": "pptx-rendered",
+      "component": {
+        "type": "TextPrimitive",
+        "props": { "text": "TextPrimitive sample", "size": "bodyText", "color": "copyNavy" }
+      },
+      "expectedTexts": ["TextPrimitive sample"],
+      "fixture": "tests/visual/golden/text-primitive.placeholder"
+    },
+    {
+      "type": "ShapePrimitive",
+      "layer": "primitive",
+      "maturity": "pptx-rendered",
+      "component": {
+        "type": "ShapePrimitive",
+        "props": { "surface": "white", "radius": "mdRadius" }
+      },
+      "expectedTexts": [],
+      "fixture": "tests/visual/golden/shape-primitive.placeholder"
+    },
+    {
+      "type": "IconPrimitive",
+      "layer": "primitive",
+      "maturity": "pptx-rendered",
+      "component": {
+        "type": "IconPrimitive",
+        "props": { "icon": "icon.placeholder", "label": "IconPrimitive sample" }
+      },
+      "expectedTexts": ["IconPrimitive sample"],
+      "fixture": "tests/visual/golden/icon-primitive.placeholder"
+    },
+    {
+      "type": "PageTitle",
+      "layer": "atom",
+      "maturity": "pptx-rendered",
+      "component": {
+        "type": "PageTitle",
+        "props": { "text": "PageTitle sample", "size": "pageTitle", "color": "copyNavy" }
+      },
+      "expectedTexts": ["PageTitle sample"],
+      "fixture": "tests/visual/golden/page-title.placeholder"
+    },
+    {
+      "type": "BadgePill",
+      "layer": "atom",
+      "maturity": "pptx-rendered",
+      "component": {
+        "type": "BadgePill",
+        "props": { "text": "BadgePill sample", "size": "captionLabel", "color": "copyNavy" }
+      },
+      "expectedTexts": ["BadgePill sample"],
+      "fixture": "tests/visual/golden/badge-pill.placeholder"
+    },
+    {
+      "type": "MetricBlock",
+      "layer": "atom",
+      "maturity": "pptx-rendered",
+      "component": {
+        "type": "MetricBlock",
+        "props": { "label": "MetricBlock label", "value": "42%" }
+      },
+      "expectedTexts": ["MetricBlock label", "42%"],
+      "fixture": "tests/visual/golden/metric-block.placeholder"
+    },
+    {
+      "type": "BulletList",
+      "layer": "atom",
+      "maturity": "pptx-rendered",
+      "component": {
+        "type": "BulletList",
+        "props": { "items": ["BulletList first", "BulletList second"] }
+      },
+      "expectedTexts": ["BulletList first", "BulletList second"],
+      "fixture": "tests/visual/golden/bullet-list.placeholder"
+    },
+    {
+      "type": "SurfaceCard",
+      "layer": "atom",
+      "maturity": "pptx-rendered",
+      "component": {
+        "type": "SurfaceCard",
+        "props": { "title": "Example card", "body": "SurfaceCard body", "surface": "white", "radius": "mdRadius" }
+      },
+      "expectedTexts": ["Example card", "SurfaceCard body"],
+      "fixture": "tests/visual/golden/surface-card.placeholder"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+type: IconPrimitive
+props:
+  icon: icon.placeholder
+  label: Placeholder icon

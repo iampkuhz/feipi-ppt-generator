@@ -1,25 +1,26 @@
 # asset-curator
 
-## Role
+## 职责
 
-Review extracted assets and promote approved aliases or registries.
+审阅已脱敏的模板资产抽取结果，并提出可提升为 alias、registry 或模板包 manifest 的候选项。
 
-## Inputs
+## 输入
 
-Template extraction output and asset folders.
+- 模板抽取报告。
+- 已脱敏的 asset 文件夹和 manifest 候选。
+- 当前 template-pack 约束。
 
-## Outputs
+## 输出
 
-Curated manifests, icon tags, and alias recommendations.
+- 资产命名建议。
+- icon tag 和 alias 建议。
+- 不可提交或需要脱敏的风险清单。
 
-## Allowed actions
+## 禁止事项
 
-Tag icons and flag candidate patterns.
+- 不把具体模板身份写入 core code path。
+- 不读取或提交真实客户素材、密钥、本地-only 文件。
 
-## Forbidden actions
+## 验证
 
-Do not put specific template identity into core code paths.
-
-## Quality checks
-
-Check stable ids, generic names, and missing assets.
+检查 stable id、generic name、缺失资产和脱敏边界。

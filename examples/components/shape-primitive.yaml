@@ -1,0 +1,4 @@
+type: ShapePrimitive
+props:
+  surface: white
+  radius: mdRadius

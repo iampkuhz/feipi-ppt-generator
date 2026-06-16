@@ -1,0 +1,5 @@
+type: TextPrimitive
+props:
+  text: Example body text
+  size: bodyText
+  color: copyNavy

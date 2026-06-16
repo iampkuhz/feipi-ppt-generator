@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
+import { validateAgentRuntime } from '../../scripts/harness/validate_agent_runtime.js';
 import { validateHarnessStructure } from '../../scripts/harness/validate_harness_structure.js';
 import { validateLanguagePolicy } from '../../scripts/harness/validate_language_policy.js';
 import { validateOpenSpecLayout } from '../../scripts/harness/validate_openspec_layout.js';
@@ -20,6 +21,7 @@ describe('harness 治理检查', () => {
     expect(repo.filter((item) => !item.ok)).toEqual([]);
     await expect(validateOpenSpecLayout()).resolves.toEqual([]);
     await expect(validateHarnessStructure()).resolves.toEqual([]);
+    await expect(validateAgentRuntime()).resolves.toEqual([]);
   });
 
   it('中文规约快速检查通过', async () => {

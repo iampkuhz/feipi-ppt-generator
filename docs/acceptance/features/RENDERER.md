@@ -13,4 +13,4 @@ Renderer 只负责把合法 deck spec、foundation alias 和模板资产渲染�
 
 ## 风险
 
-`check_pptx_structure.ts` 仍需从 stub 升级为真实 zip 结构检查。preview 和溢出检查属于后续 PPT QA change。
+`check_pptx_structure.ts` 已基于 PPTX zip 结构做 deterministic inspection。图像预览、视觉 diff 和文本溢出检查仍属于后续 PPT QA change。

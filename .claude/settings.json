@@ -1,5 +1,5 @@
 {
-  "agent": "main-default",
+  "agent": "qwen-main-default",
   "permissions": {
     "defaultMode": "bypassPermissions",
     "additionalDirectories": [],

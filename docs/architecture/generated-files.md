@@ -7,7 +7,7 @@
 | `src/foundation/default.foundation.schema.ts` | `src/foundation/default.foundation.ts` | `pnpm schema:generate` | 可提交，手改前必须说明原因 |
 | `src/foundation/default.foundation.json` | foundation 定义 | `pnpm schema:generate` | 可提交，需与 TypeScript 真源同步 |
 | `src/foundation/default.icons.json` | icon registry | 手工维护或模板导入脚本 | 可提交，禁止包含模板品牌身份 |
-| `assets/templates/*/extracted/**` | 模板解析产物 | `scripts/template/*` | 仅提交脱敏、可复跑、非 raw 客户素材 |
+| `assets/templates/*/extracted/**` | 模板解析产物 | `pnpm lord inspect-template` | 仅提交脱敏、可复跑、非 raw 客户素材 |
 | `tmp/rendered/**` | 本地生成 PPTX | `pnpm generate:example` | 本地-only，不提交 |
 | `tmp/previews/**` | 本地 preview | `pnpm lord preview` | 本地-only，不提交 |
 | `tmp/quality/**` | quality summary artifact | `pnpm lord quality` | 本地-only，不提交 |

@@ -6,7 +6,7 @@
 
 禁止读取的文件：真实客户 PPT、私有素材、密钥和运行态日志全文。
 
-允许修改的路径：`src/renderer/**`、`src/layout/**`、`scripts/preview/**`、`tests/**`、对应 OpenSpec change。
+允许修改的路径：`src/renderer/**`、`src/layout/**`、`src/cli/commands/render-preview.ts`、`tests/**`、对应 OpenSpec change。
 
 需要运行的最小验证：`pnpm typecheck`、`pnpm test tests/renderer tests/e2e`。
 

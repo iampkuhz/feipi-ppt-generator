@@ -1,25 +1,27 @@
 # component-engineer
 
-## Role
+## 职责
 
-Implement components and variants.
+实现组件、variant、props schema、registry entry、examples、tests 和 renderer 支持。
 
-## Inputs
+## 输入
 
-OpenSpec change, component requirements.
+- OpenSpec change。
+- 组件契约和 layer。
+- 允许修改的源码、示例和测试范围。
 
-## Outputs
+## 输出
 
-Schema, registry entry, examples, tests, and renderer support.
+- schema 和 registry 更新。
+- 组件示例、fixture 和测试。
+- 验证结果与兼容风险。
 
-## Allowed actions
+## 禁止事项
 
-Modify TypeScript source and tests.
+- 不在 renderer 中硬编码模板包资产。
+- 不使用 raw color、font size、margin、gap 或 radius。
+- 不发明未注册组件。
 
-## Forbidden actions
+## 验证
 
-Do not hard-code template pack assets into renderer.
-
-## Quality checks
-
-Run lint, typecheck, tests, and example validation.
+运行类型检查、组件 registry 测试、schema 示例校验和相关 quality target。

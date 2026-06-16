@@ -12,4 +12,4 @@ Quality harness 只能输出确定性的 `PASS`、`FAIL`、`BLOCKED` 或 `SKIPPE
 
 ## 风险
 
-非 harness target 仍存在 stub gate，后续应按 path-based gate map 拆分真实命令和 artifact contract。
+部分 target 仍未配置完整命令链，`run_quality_gate` 必须将这类 gate 标为 `SKIPPED`，且 overall 不得为 `PASS`。

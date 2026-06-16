@@ -1,5 +1,6 @@
 import { Command } from 'commander';
 import { validateHarnessStructure } from '../../../scripts/harness/validate_harness_structure.js';
+import { validateAgentRuntime } from '../../../scripts/harness/validate_agent_runtime.js';
 import { validateLanguagePolicy } from '../../../scripts/harness/validate_language_policy.js';
 import { validateOpenSpecLayout } from '../../../scripts/harness/validate_openspec_layout.js';
 import { validateRepoStructure } from '../../../scripts/harness/validate_repo_structure.js';
@@ -12,8 +13,9 @@ export function doctorCommand(): Command {
       const repoErrors = repoChecks.filter((item) => !item.ok).map((item) => `缺少 ${item.path}`);
       const openspecErrors = await validateOpenSpecLayout();
       const harnessErrors = await validateHarnessStructure();
+      const agentErrors = await validateAgentRuntime();
       const languageErrors = await validateLanguagePolicy();
-      const errors = [...repoErrors, ...openspecErrors, ...harnessErrors, ...languageErrors];
+      const errors = [...repoErrors, ...openspecErrors, ...harnessErrors, ...agentErrors, ...languageErrors];
 
       if (errors.length > 0) {
         for (const error of errors) console.error(`FAIL ${error}`);

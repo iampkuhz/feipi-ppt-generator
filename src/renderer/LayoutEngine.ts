@@ -8,4 +8,14 @@ export class LayoutEngine {
   contentRect(row: number): Rect {
     return { x: 0.75, y: 1.25 + row * 0.42, w: 8.5, h: 0.3 };
   }
+
+  componentRect(index: number): Rect {
+    const row = Math.max(0, index);
+    return { x: 0.8, y: 1.25 + row * 0.72, w: 5.8, h: 0.52 };
+  }
+
+  cardRect(index: number): Rect {
+    const row = Math.max(0, index);
+    return { x: 0.8, y: 1.15 + row * 0.95, w: 6.4, h: 0.82 };
+  }
 }

@@ -5,7 +5,6 @@ const requiredPaths = [
   'harness/manifest.yaml',
   'harness/agents/README.md',
   'harness/agents/registry.yaml',
-  'harness/agents/templates/README.md',
   'harness/context/README.md',
   'harness/context/foundation-context.md',
   'harness/context/renderer-context.md',
@@ -26,7 +25,8 @@ const requiredPaths = [
   'harness/workflow/hook-runtime-lifecycle.md',
   'harness/workflow/openspec-change-lifecycle.md',
   'harness/workflow/subagent-execution.md',
-  'harness/workflow/release-lifecycle.md'
+  'harness/workflow/release-lifecycle.md',
+  'scripts/harness/validate_agent_runtime.ts'
 ];
 
 export async function validateHarnessStructure(): Promise<string[]> {

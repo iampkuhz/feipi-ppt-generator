@@ -22,4 +22,4 @@ await writeFile(
     2
   )}\n`
 );
-console.log('PASS Stop hook stub 已写入 summary');
+console.log('PASS Stop hook 已写入 summary');

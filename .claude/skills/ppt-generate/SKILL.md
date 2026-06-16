@@ -1,6 +1,10 @@
-# PPT Generate Skill
+# PPT 生成 Skill
 
 适用场景：根据 deck spec 生成 PPTX。
+
+不要用于：仓库地基未稳定时规划完整 PPT、绕过 schema 直接写 PPT shape。
+
+最小上下文：目标 deck spec、`src/schema/deck.schema.ts`、`src/cli/commands/generate.ts`。
 
 输入要求：合法 `deck.yaml`，视觉值使用 Layer0 alias，组件已注册。
 
